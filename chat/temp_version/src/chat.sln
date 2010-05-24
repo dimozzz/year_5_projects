@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chat", "chat\chat.vcproj", "{60AC7877-33A0-42BD-9E39-CFBDA92C725C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chat_client", "chat_client\chat_client.vcproj", "{DB4BF0CE-BA9F-4BA3-A225-9FF9CCCAA375}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "idl", "idl\idl.vcproj", "{0969C30C-B4FC-4E06-BC07-C9F02B7701D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60AC7877-33A0-42BD-9E39-CFBDA92C725C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{60AC7877-33A0-42BD-9E39-CFBDA92C725C}.Debug|Win32.Build.0 = Debug|Win32
+		{60AC7877-33A0-42BD-9E39-CFBDA92C725C}.Release|Win32.ActiveCfg = Release|Win32
+		{60AC7877-33A0-42BD-9E39-CFBDA92C725C}.Release|Win32.Build.0 = Release|Win32
+		{DB4BF0CE-BA9F-4BA3-A225-9FF9CCCAA375}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DB4BF0CE-BA9F-4BA3-A225-9FF9CCCAA375}.Debug|Win32.Build.0 = Debug|Win32
+		{DB4BF0CE-BA9F-4BA3-A225-9FF9CCCAA375}.Release|Win32.ActiveCfg = Release|Win32
+		{DB4BF0CE-BA9F-4BA3-A225-9FF9CCCAA375}.Release|Win32.Build.0 = Release|Win32
+		{0969C30C-B4FC-4E06-BC07-C9F02B7701D7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0969C30C-B4FC-4E06-BC07-C9F02B7701D7}.Debug|Win32.Build.0 = Debug|Win32
+		{0969C30C-B4FC-4E06-BC07-C9F02B7701D7}.Release|Win32.ActiveCfg = Release|Win32
+		{0969C30C-B4FC-4E06-BC07-C9F02B7701D7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
