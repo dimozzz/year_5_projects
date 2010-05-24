@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<project name="GRobocode" default="build">
+
+    <property file="build.properties"/>
+    
+    <target name="build">
+        <mkdir dir="${build.out}"/>
+		<mkdir dir="$deploy"/>
+        <javac
+                srcdir="${src}"
+                destdir="${build.out}"
+        />
+		<jar destfile="${deploy}/${jar}">
+			<fileset dir="${build.out}"/>
+			<manifest>
+				<attribute name="Main-Class" value="${main}"/>
+			</manifest>
+		</jar>
+    </target>
+    
+    <target name="clean">
+	    <delete quiet="true" includeEmptyDirs="true">
+            <fileset dir="${build.out}"/>
+        </delete>
+    </target>
+</project>
