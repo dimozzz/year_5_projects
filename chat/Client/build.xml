@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 
-<project name="Client" default="build">
+<project name="GRobocode" default="build">
 
     <property file="build.properties"/>
     
     <target name="build">
         <mkdir dir="${build.out}"/>
-		<mkdir dir="${deploy}"/>
+		<mkdir dir="$deploy"/>
         <javac
                 srcdir="${src}"
                 destdir="${build.out}"
