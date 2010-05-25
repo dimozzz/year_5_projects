@@ -9,25 +9,25 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Created by HREN_VAM.
  */
-public class Sender implements Runnable{
+public class Sender implements Runnable {
 
     private BlockingQueue<String> queue;
     private Server serv;
     private User u;
 
-    public Sender(BlockingQueue<String> queue, Server serv, User u){
-        this.queue = queue;
+    public Sender(User user, Server serv) {
+        this.user = user;
         this.serv = serv;
         this.u = u;
     }
 
-    public void run(){
-        try{
-            while(true){
-                String mes = queue.take();
-                serv.send(u, mes);
+    public void run() {
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {
+                serv.send(user, in.readLine());
             }
-        }catch(InterruptedException e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

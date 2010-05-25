@@ -9,15 +9,9 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Created by HREN_VAM.
  */
-public class UserImpl extends UserPOA{
+public class UserImpl extends UserPOA {
 
-    private BlockingQueue<Query> queue;
-
-    public UserImpl(BlockingQueue<Query> queue){
-        this.queue = queue;
-    }
-
-    public void receive(String author, String message){
-        queue.offer(new Query(author, message));
+    public void receive(String author, String message) {
+        System.out.println(author + ": " + message);
     }
 }
