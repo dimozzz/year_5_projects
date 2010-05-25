@@ -14,23 +14,23 @@ import java.io.InputStreamReader;
 /**
  * Created by HREN_VAM.
  */
-public class Sender implements Runnable{
+public class Sender implements Runnable {
 
     private User user;
     private Server serv;
 
-    public Sender(User user, Server serv){
+    public Sender(User user, Server serv) {
         this.user = user;
         this.serv = serv;
     }
 
-    public void run(){
-        try{
+    public void run() {
+        try {
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            while(true){
+            while (true) {
                 serv.send(user, in.readLine());
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

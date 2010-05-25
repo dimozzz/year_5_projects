@@ -23,18 +23,18 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 /**
  * Created by HREN_VAM.
  */
-public class Main{
+public class Main {
 
-    public static void main(String[] args)throws InvalidName, AdapterInactive,
+    public static void main(String[] args) throws InvalidName, AdapterInactive,
             org.omg.CosNaming.NamingContextPackage.InvalidName, WrongPolicy,
-            ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed{
+            ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed {
 
         ORB orb = ORB.init(args, null);
 
         POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
         rootPOA.the_POAManager().activate();
 
-        UserImpl userImpl  = new UserImpl();
+        UserImpl userImpl = new UserImpl();
         rootPOA.activate_object(userImpl);
 
         User user = UserHelper.narrow(rootPOA.servant_to_reference(userImpl));

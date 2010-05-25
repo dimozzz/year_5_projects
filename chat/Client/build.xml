@@ -6,7 +6,7 @@
     
     <target name="build">
         <mkdir dir="${build.out}"/>
-		<mkdir dir="$deploy"/>
+		<mkdir dir="${deploy}"/>
         <javac
                 srcdir="${src}"
                 destdir="${build.out}"
