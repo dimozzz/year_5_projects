@@ -41,10 +41,7 @@ public class Main{
         POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
         rootPOA.the_POAManager().activate();
 
-        final BlockingQueue<Query> recieveQueue = new LinkedBlockingQueue<Query>();
-        final BlockingQueue<String> sendQueue = new LinkedBlockingQueue<String>();
-
-        UserImpl userImpl = new UserImpl(recieveQueue);
+        UserImpl userImpl = new UserImpl();
         rootPOA.activate_object(userImpl);
 
         final User user = UserHelper.narrow(rootPOA.servant_to_reference(userImpl));
