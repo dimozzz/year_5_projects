@@ -23,11 +23,11 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 /**
  * Created by HREN_VAM.
  */
-public class Main {
+public class Main{
 
-    public static void main(String[] args) throws InvalidName, AdapterInactive,
+    public static void main(String[] args)throws InvalidName, AdapterInactive,
             org.omg.CosNaming.NamingContextPackage.InvalidName, WrongPolicy,
-            ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed {
+            ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed{
 
         ORB orb = ORB.init(args, null);
 
