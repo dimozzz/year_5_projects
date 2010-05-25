@@ -7,7 +7,7 @@ import java.util.Properties;
 /**
  * Created by HREN_VAM.
  */
-public class Config {
+public class Config{
 
     private Properties p;
 
@@ -15,30 +15,30 @@ public class Config {
     private String path;
     private String name;
 
-    public int getTime() {
+    public int getTime(){
         return time;
     }
 
-    public String getPath() {
+    public String getPath(){
         return path;
     }
 
-    public String getName() {
+    public String getName(){
         return name;
     }
 
     private static Config ourInstance = new Config();
 
-    public static Config getInstance() {
+    public static Config getInstance(){
         return ourInstance;
     }
 
-    private Config() {
+    private Config(){
         p = new Properties();
-        try {
+        try{
             p.load(new FileReader("conf" + System.getProperty("file.separator") +
                     "main.properties"));
-        } catch (IOException e) {
+        }catch(IOException e){
             throw new RuntimeException(e);
         }
         time = Integer.parseInt(p.getProperty("time"));
