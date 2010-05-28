@@ -2,6 +2,7 @@ package impl;
 
 import Chat.UserPOA;
 import impl.query.Query;
+import impl.query.QueryRunner;
 
 import java.util.concurrent.BlockingQueue;
 
