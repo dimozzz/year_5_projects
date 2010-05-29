@@ -35,10 +35,11 @@ public class Config{
 
     private Config(){
         p = new Properties();
-        try{
-            p.load(new FileReader("conf" + System.getProperty("file.separator") +
+        String separator = System.getProperty("file.separator");
+        try {
+            p.load(new FileReader(".." + separator + "Client" + separator + "conf" + separator +
                     "main.properties"));
-        }catch(IOException e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         time = Integer.parseInt(p.getProperty("time"));
