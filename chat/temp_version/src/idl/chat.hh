@@ -227,7 +227,6 @@ _CORBA_MODULE_BEG
   {
   public:
     ::CORBA::Boolean _cxx_register(::Chat::User_ptr u, const char* name);
-    void alive(::Chat::User_ptr u);
     void quit(::Chat::User_ptr u);
     void send(::Chat::User_ptr u, const char* message);
 
@@ -264,7 +263,6 @@ _CORBA_MODULE_BEG
     virtual ~_impl_Server();
 
     virtual ::CORBA::Boolean _cxx_register(::Chat::User_ptr u, const char* name) = 0;
-    virtual void alive(::Chat::User_ptr u) = 0;
     virtual void quit(::Chat::User_ptr u) = 0;
     virtual void send(::Chat::User_ptr u, const char* message) = 0;
     

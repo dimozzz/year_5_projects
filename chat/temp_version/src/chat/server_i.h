@@ -82,10 +82,6 @@ struct Server_i : POA_Chat::Server
         return v_.insert(u, name);
     }
 
-    void alive(::Chat::User_ptr u)
-    {
-    }
-
     void quit(::Chat::User_ptr u)
     {
         v_.erase(u);

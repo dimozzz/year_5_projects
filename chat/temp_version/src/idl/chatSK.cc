@@ -479,27 +479,6 @@ _0RL_lcfn_1522ABBAC0204E15_50000000(omniCallDescriptor* cd, omniServant* svnt)
 {
   _0RL_cd_1522ABBAC0204E15_40000000* tcd = (_0RL_cd_1522ABBAC0204E15_40000000*)cd;
   Chat::_impl_Server* impl = (Chat::_impl_Server*) svnt->_ptrToInterface(Chat::Server::_PD_repoId);
-  impl->alive(tcd->arg_0);
-
-
-}
-
-void Chat::_objref_Server::alive(::Chat::User_ptr u)
-{
-  _0RL_cd_1522ABBAC0204E15_40000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_50000000, "alive", 6);
-  _call_desc.arg_0 = u;
-
-  _invoke(_call_desc);
-
-
-
-}
-// Local call call-back function.
-static void
-_0RL_lcfn_1522ABBAC0204E15_60000000(omniCallDescriptor* cd, omniServant* svnt)
-{
-  _0RL_cd_1522ABBAC0204E15_40000000* tcd = (_0RL_cd_1522ABBAC0204E15_40000000*)cd;
-  Chat::_impl_Server* impl = (Chat::_impl_Server*) svnt->_ptrToInterface(Chat::Server::_PD_repoId);
   impl->quit(tcd->arg_0);
 
 
@@ -507,7 +486,7 @@ _0RL_lcfn_1522ABBAC0204E15_60000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void Chat::_objref_Server::quit(::Chat::User_ptr u)
 {
-  _0RL_cd_1522ABBAC0204E15_40000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_60000000, "quit", 5);
+  _0RL_cd_1522ABBAC0204E15_40000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_50000000, "quit", 5);
   _call_desc.arg_0 = u;
 
   _invoke(_call_desc);
@@ -517,11 +496,11 @@ void Chat::_objref_Server::quit(::Chat::User_ptr u)
 }
 // Proxy call descriptor class. Mangled signature:
 //  void_i_cChat_mUser_i_cstring
-class _0RL_cd_1522ABBAC0204E15_70000000
+class _0RL_cd_1522ABBAC0204E15_60000000
   : public omniCallDescriptor
 {
 public:
-  inline _0RL_cd_1522ABBAC0204E15_70000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
+  inline _0RL_cd_1522ABBAC0204E15_60000000(LocalCallFn lcfn,const char* op_,size_t oplen,_CORBA_Boolean upcall=0):
      omniCallDescriptor(lcfn, op_, oplen, 0, _user_exns, 0, upcall)
   {
     
@@ -540,14 +519,14 @@ public:
   const char* arg_1;
 };
 
-void _0RL_cd_1522ABBAC0204E15_70000000::marshalArguments(cdrStream& _n)
+void _0RL_cd_1522ABBAC0204E15_60000000::marshalArguments(cdrStream& _n)
 {
   Chat::User::_marshalObjRef(arg_0,_n);
   _n.marshalString(arg_1,0);
 
 }
 
-void _0RL_cd_1522ABBAC0204E15_70000000::unmarshalArguments(cdrStream& _n)
+void _0RL_cd_1522ABBAC0204E15_60000000::unmarshalArguments(cdrStream& _n)
 {
   arg_0_ = Chat::User::_unmarshalObjRef(_n);
   arg_0 = arg_0_.in();
@@ -556,15 +535,15 @@ void _0RL_cd_1522ABBAC0204E15_70000000::unmarshalArguments(cdrStream& _n)
 
 }
 
-const char* const _0RL_cd_1522ABBAC0204E15_70000000::_user_exns[] = {
+const char* const _0RL_cd_1522ABBAC0204E15_60000000::_user_exns[] = {
   0
 };
 
 // Local call call-back function.
 static void
-_0RL_lcfn_1522ABBAC0204E15_80000000(omniCallDescriptor* cd, omniServant* svnt)
+_0RL_lcfn_1522ABBAC0204E15_70000000(omniCallDescriptor* cd, omniServant* svnt)
 {
-  _0RL_cd_1522ABBAC0204E15_70000000* tcd = (_0RL_cd_1522ABBAC0204E15_70000000*)cd;
+  _0RL_cd_1522ABBAC0204E15_60000000* tcd = (_0RL_cd_1522ABBAC0204E15_60000000*)cd;
   Chat::_impl_Server* impl = (Chat::_impl_Server*) svnt->_ptrToInterface(Chat::Server::_PD_repoId);
   impl->send(tcd->arg_0, tcd->arg_1);
 
@@ -573,7 +552,7 @@ _0RL_lcfn_1522ABBAC0204E15_80000000(omniCallDescriptor* cd, omniServant* svnt)
 
 void Chat::_objref_Server::send(::Chat::User_ptr u, const char* message)
 {
-  _0RL_cd_1522ABBAC0204E15_70000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_80000000, "send", 5);
+  _0RL_cd_1522ABBAC0204E15_60000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_70000000, "send", 5);
   _call_desc.arg_0 = u;
   _call_desc.arg_1 = message;
 
@@ -619,17 +598,9 @@ Chat::_impl_Server::_dispatch(omniCallHandle& _handle)
     return 1;
   }
 
-  if( omni::strMatch(op, "alive") ) {
-
-    _0RL_cd_1522ABBAC0204E15_40000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_50000000, "alive", 6, 1);
-    
-    _handle.upcall(this,_call_desc);
-    return 1;
-  }
-
   if( omni::strMatch(op, "quit") ) {
 
-    _0RL_cd_1522ABBAC0204E15_40000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_60000000, "quit", 5, 1);
+    _0RL_cd_1522ABBAC0204E15_40000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_50000000, "quit", 5, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;
@@ -637,7 +608,7 @@ Chat::_impl_Server::_dispatch(omniCallHandle& _handle)
 
   if( omni::strMatch(op, "send") ) {
 
-    _0RL_cd_1522ABBAC0204E15_70000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_80000000, "send", 5, 1);
+    _0RL_cd_1522ABBAC0204E15_60000000 _call_desc(_0RL_lcfn_1522ABBAC0204E15_70000000, "send", 5, 1);
     
     _handle.upcall(this,_call_desc);
     return 1;

@@ -8,7 +8,6 @@ module Chat
 	interface Server
 	{
 		boolean register(in User u, in string name);
-		void alive(in User u);
 		void quit(in User u);
 		void send(in User u, in string message);
 	};
