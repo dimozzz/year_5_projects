@@ -5,26 +5,21 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Created by HREN_VAM.
+ * @author Sokolov.
  */
 public class Config{
 
-    private Properties p;
+    private final Properties p = new Properties();
 
-    private int time;
-    private String path;
-    private String name;
+    private final String ourName;
+    private final String serverName;
 
-    public int getTime(){
-        return time;
+    public String getServerName() {
+        return serverName;
     }
 
-    public String getPath(){
-        return path;
-    }
-
-    public String getName(){
-        return name;
+    public String getOurName(){
+        return ourName;
     }
 
     private static Config ourInstance = new Config();
@@ -34,7 +29,6 @@ public class Config{
     }
 
     private Config(){
-        p = new Properties();
         String separator = System.getProperty("file.separator");
         try {
             p.load(new FileReader(".." + separator + "Client" + separator + "conf" + separator +
@@ -42,8 +36,7 @@ public class Config{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        time = Integer.parseInt(p.getProperty("time"));
-        path = p.getProperty("path");
-        name = p.getProperty("name");
+        serverName = p.getProperty("server.name");
+        ourName = p.getProperty("our.name");
     }
 }

@@ -32,7 +32,8 @@ public class Main{
 
     public static void main(String[] args)throws InvalidName, AdapterInactive,
             org.omg.CosNaming.NamingContextPackage.InvalidName, WrongPolicy,
-            ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed{
+            ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed,
+            InterruptedException, InvocationTargetException {
         Config config = Config.getInstance();
         final ORB orb = ORB.init(args, null);
 
@@ -50,9 +51,9 @@ public class Main{
         org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
         NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
 
-        NameComponent[] path = ncRef.to_name(Config.getInstance().getPath());
+        NameComponent[] path = ncRef.to_name(config.getServerName());
         final Server serv = ServerHelper.narrow(ncRef.resolve(path));
-        serv.register(user, Config.getInstance().getName());
+        serv.register(user, config.getOurName());
 
         new Thread(new Runnable() {
             @Override public void run() {
@@ -72,16 +73,10 @@ public class Main{
         }).start();
 
         FrameCreator f = new FrameCreator("ЧЯТ", sendQueue);
-        try{
-            SwingUtilities.invokeAndWait(f);
-            while(true){
-                Query q = recieveQueue.take();
-                f.getFrame().addText(q.getAuthor() + ": " + q.getMessage());
-            }
-        }catch(InterruptedException e){
-            throw new RuntimeException(e);
-        } catch(InvocationTargetException e){
-            throw new RuntimeException(e);
+        SwingUtilities.invokeAndWait(f);
+        while (true) {
+            Query q = recieveQueue.take();
+            f.getFrame().addText(q.getAuthor() + ": " + q.getMessage());
         }
     }
 
