@@ -45,12 +45,16 @@ int main( int argc, char** argv )
             return 1;
         }
 
-        echoref->_cxx_register(u_ptr, argv[1]);
-        echoref->send(u_ptr, src);
+        bool r = echoref->_cxx_register(u_ptr, argv[1]);
+        if (r)
+        {
+            for (;;)
+                echoref->send(u_ptr, src);
+        }
+        else
+           cerr << "can't register on server" << endl;
 
         u->_remove_ref();
-
-        orb->run();
     }
     catch (CORBA::TRANSIENT&) {
         cerr << "Caught system exception TRANSIENT -- unable to contact the "
