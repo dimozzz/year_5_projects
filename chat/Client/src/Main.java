@@ -4,8 +4,6 @@ import Chat.User;
 import Chat.UserHelper;
 import config.Config;
 import gui.MainFrame;
-import impl.Reciever;
-import impl.Sender;
 import impl.UserImpl;
 import impl.query.Query;
 import org.omg.CORBA.ORB;
@@ -28,15 +26,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Created by HREN_VAM.
+ * @author Sokolov.
  */
 public class Main{
 
     public static void main(String[] args)throws InvalidName, AdapterInactive,
             org.omg.CosNaming.NamingContextPackage.InvalidName, WrongPolicy,
             ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed{
-
-        ORB orb = ORB.init(args, null);
+        Config config = Config.getInstance();
+        final ORB orb = ORB.init(args, null);
 
         POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
         rootPOA.the_POAManager().activate();
@@ -53,11 +51,25 @@ public class Main{
         NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
 
         NameComponent[] path = ncRef.to_name(Config.getInstance().getPath());
-        Server serv = ServerHelper.narrow(ncRef.resolve(path));
+        final Server serv = ServerHelper.narrow(ncRef.resolve(path));
         serv.register(user, Config.getInstance().getName());
 
-        new Thread(new Sender(sendQueue, serv, user)).start();
-        new Thread(new Reciever(orb)).start();
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try {
+                    while (true) {
+                        serv.send(user, sendQueue.take());
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override public void run() {
+                orb.run();
+            }
+        }).start();
 
         FrameCreator f = new FrameCreator("ЧЯТ", sendQueue);
         try{
