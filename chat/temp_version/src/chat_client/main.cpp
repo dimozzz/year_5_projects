@@ -77,6 +77,8 @@ int main( int argc, char** argv )
 
 static CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb)
 {
+    _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
+
     CosNaming::NamingContext_var rootContext;
 
     try {
