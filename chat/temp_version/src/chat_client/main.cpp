@@ -30,7 +30,7 @@ int main( int argc, char** argv )
         User_i * u = new User_i();
         PortableServer::ObjectId_var myechoid = poa->activate_object(u);
 
-        Chat::User_ptr u_ptr = u->_this();
+        Chat::User_var u_ptr = u->_this();
 
         CORBA::String_var src = static_cast<char const *>(argv[2]);
 
@@ -54,6 +54,7 @@ int main( int argc, char** argv )
            cerr << "can't register on server" << endl;
 
         u->_remove_ref();
+        orb->destroy();
     }
     catch (CORBA::TRANSIENT&) {
         cerr << "Caught system exception TRANSIENT -- unable to contact the "
