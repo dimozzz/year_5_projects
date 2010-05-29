@@ -177,7 +177,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\corba_user_ptr.h"
+			>
+		</File>
+		<File
 			RelativePath=".\main.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\pair_utils.h"
 			>
 		</File>
 		<File
