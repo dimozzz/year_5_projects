@@ -90,7 +90,7 @@ int main(int argc, char ** argv)
     CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
     PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
 
-    Server_i * myecho = new Server_i();
+    Server_i * myecho = new Server_i(orb);
     PortableServer::ObjectId_var myechoid = poa->activate_object(myecho);
 
     CORBA::Object_var obj2 = myecho->_this();

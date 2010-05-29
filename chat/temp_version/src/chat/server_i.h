@@ -72,7 +72,8 @@ struct Server_i : POA_Chat::Server
 {
     typedef boost::lock_guard<boost::mutex> lock_t;
 
-    Server_i()
+    Server_i(CORBA::ORB_ptr orb)
+        : orb_(orb)
     {}
 
     ::CORBA::Boolean _cxx_register(::Chat::User_ptr u, const char* name)
@@ -89,6 +90,12 @@ struct Server_i : POA_Chat::Server
 
     void send(::Chat::User_ptr u, const char* message)
     {
+        if (std::string(message) == "/server-quit")
+        {
+            orb_->shutdown(false);
+            return;
+        }
+
         lock_t lock(m_);
         std::string u_name;
 
@@ -117,6 +124,7 @@ struct Server_i : POA_Chat::Server
     }
 
 private:
+    CORBA::ORB_ptr orb_;
     user_name_vec v_;
     boost::mutex m_;
 };
