@@ -18,7 +18,7 @@ struct User_i : POA_Chat::User
 
 int main( int argc, char** argv )
 {
-    if (argc != 2)
+    if (argc != 3)
        return 1;
 
     try {
@@ -32,7 +32,7 @@ int main( int argc, char** argv )
 
         Chat::User_ptr u_ptr = u->_this();
 
-        CORBA::String_var src = "Hello!";
+        CORBA::String_var src = static_cast<char const *>(argv[2]);
 
         PortableServer::POAManager_var pman = poa->the_POAManager();
         pman->activate();
@@ -48,8 +48,7 @@ int main( int argc, char** argv )
         bool r = echoref->_cxx_register(u_ptr, argv[1]);
         if (r)
         {
-            for (;;)
-                echoref->send(u_ptr, src);
+            echoref->send(u_ptr, src);
         }
         else
            cerr << "can't register on server" << endl;
