@@ -103,7 +103,7 @@ static CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb)
 
     name[0].id = "test";
     name[0].kind = "my_context";
-    name[1].id = "Echo";
+    name[1].id = "ChatServer";
     name[1].kind = "Object";
 
     try {
