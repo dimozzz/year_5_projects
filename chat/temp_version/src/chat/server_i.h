@@ -54,13 +54,36 @@ struct Server_i : POA_Chat::Server
     ::CORBA::Boolean _cxx_register(::Chat::User_ptr u, const char* name)
     {
         lock_t lock(m_);
+
+        {
+           std::stringstream ss;
+           ss << "user \"" << name << "\" registered";
+           deliver("server", ss.str().c_str());
+        }
+
         return insert(v_, corba_user_ptr::make(u), name);
     }
 
     void quit(::Chat::User_ptr u)
     {
         lock_t lock(m_);
-        erase(v_, corba_user_ptr::make(u));
+
+        user_name_vec::iterator i = std::find_if(v_.begin(), v_.end(), first_is(corba_user_ptr::make(u)));
+        if (i == v_.end())
+        {
+           deliver("server", "can't erase user: unknown user");
+           return;
+        }
+
+        assert(std::find_if(i + 1, v_.end(), first_is(corba_user_ptr::make(u))) == v_.end());
+
+        {
+           std::stringstream ss;
+           ss << "user \"" << i->second << "\" left";
+           deliver("server", ss.str().c_str());
+        }
+
+        v_.erase(i);
     }
 
     void send(::Chat::User_ptr u, const char* message)
@@ -82,20 +105,27 @@ struct Server_i : POA_Chat::Server
                 u_name = ui->second;
         }
 
-        user_name_vec::const_iterator i = v_.begin();
-        while (i != v_.end())
-        {
-            try
-            {
-               i->first->receive(u_name.c_str(), message);
-               ++i;
-            }
-            catch (CORBA::Exception const & e)
-            {
-               std::cerr << "Caught a CORBA::" << e._name() << " in send (kick user \"" << i->second << "\")." << std::endl;
-               i = v_.erase(i);
-            }
-        }
+        deliver(u_name, message);
+    }
+
+    void deliver(std::string const & from, std::string const & message)
+    {
+       user_name_vec::const_iterator i = v_.begin();
+       while (i != v_.end())
+       {
+          try
+          {
+             i->first->receive(from.c_str(), message.c_str());
+             ++i;
+          }
+          catch (CORBA::Exception const & e)
+          {
+             std::cerr << "Caught a CORBA::" << e._name() << " in send (kick user \"" << i->second << "\")." << std::endl;
+             i = v_.erase(i);
+          }
+       }
+
+       std::cerr << from << ": " << message << std::endl;
     }
 
 private:
