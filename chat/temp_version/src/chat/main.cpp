@@ -40,35 +40,6 @@ CORBA::Boolean bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr objref)
 
     try
     {
-        // Bind a context called "test" to the root context:
-        CosNaming::Name contextName;
-        contextName.length(1);
-        contextName[0].id   = (const char*) "test";      // string copied
-        contextName[0].kind = (const char*) "my_context"; // string copied
-        // Note on kind: The kind field is used to indicate the type
-        // of the object. This is to avoid conventions such as that used
-        // by files (name.type -- e.g. test.ps = postscript etc.)
-
-        CosNaming::NamingContext_var testContext;
-        try
-        {
-            // Bind the context to root.
-            testContext = rootContext->bind_new_context(contextName);
-        }
-        catch(CosNaming::NamingContext::AlreadyBound& )
-        {
-            // If the context already exists, this exception will be raised.
-            // In this case, just resolve the name and assign testContext
-            // to the object returned:
-            CORBA::Object_var obj = rootContext->resolve(contextName);
-            testContext = CosNaming::NamingContext::_narrow(obj);
-            if( CORBA::is_nil(testContext) )
-            {
-                cerr << "Failed to narrow naming context." << endl;
-                return 0;
-            }
-        }
-
         // Bind objref with name Echo to the testContext:
         CosNaming::Name objectName;
         objectName.length(1);
@@ -76,11 +47,11 @@ CORBA::Boolean bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr objref)
         objectName[0].kind = (const char*) "Object"; // string copied
         try
         {
-            testContext->bind(objectName, objref);
+            rootContext->bind(objectName, objref);
         }
         catch(CosNaming::NamingContext::AlreadyBound& )
         {
-            testContext->rebind(objectName, objref);
+            rootContext->rebind(objectName, objref);
         }
         // Note: Using rebind() will overwrite any Object previously bound
         //       to /test/Echo with obj.

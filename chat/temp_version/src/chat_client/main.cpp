@@ -99,12 +99,10 @@ static CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb)
     }
 
     CosNaming::Name name;
-    name.length( 2 );
+    name.length( 1 );
 
-    name[0].id = "test";
-    name[0].kind = "my_context";
-    name[1].id = "ChatServer";
-    name[1].kind = "Object";
+    name[0].id = "ChatServer";
+    name[0].kind = "Object";
 
     try {
         return rootContext->resolve(name);
