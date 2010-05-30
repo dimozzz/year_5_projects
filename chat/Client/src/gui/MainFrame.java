@@ -15,14 +15,11 @@ import java.util.concurrent.BlockingQueue;
  */
 public class MainFrame extends JFrame {
 
-    private final BlockingQueue<String> outcomingMessages;
     private final JTextField editor = new JTextField();
     private final JTextArea otherMessages = new JTextArea();
 
     public MainFrame(String title, final BlockingQueue<String> outcomingMessages) {
         super(title);
-
-        this.outcomingMessages = outcomingMessages;
 
         editor.addActionListener(new ActionListener() {
             @Override
@@ -37,7 +34,7 @@ public class MainFrame extends JFrame {
 
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent e) {
+            public void windowClosing(WindowEvent e) {
                 System.out.println("MainFrame: exit");
                 outcomingMessages.offer(":quit");
             }
