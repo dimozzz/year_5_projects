@@ -110,7 +110,7 @@ struct Server_i : POA_Chat::Server
 
     void deliver(std::string const & from, std::string const & message)
     {
-       user_name_vec::const_iterator i = v_.begin();
+       user_name_vec::iterator i = v_.begin();
        while (i != v_.end())
        {
           try
