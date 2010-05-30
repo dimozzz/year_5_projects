@@ -35,8 +35,11 @@ public class Main {
         org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
         System.out.println("Resolved initial reference to NameService");
         NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+        System.out.println("Naming context got");
 
-        NameComponent[] path = ncRef.to_name(serverName);
+        NameComponent[] path = {
+                new NameComponent(serverName,"Object")
+        };/*ncRef.to_name(serverName);*/
         return ServerHelper.narrow(ncRef.resolve(path));
     }
 

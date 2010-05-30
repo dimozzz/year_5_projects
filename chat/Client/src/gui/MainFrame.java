@@ -1,7 +1,5 @@
 package gui;
 
-import impl.query.Query;
-
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import java.awt.*;
@@ -9,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Created by HREN_VAM.
+ * @author Sokolov.
  */
 public class MainFrame extends JFrame {
 
