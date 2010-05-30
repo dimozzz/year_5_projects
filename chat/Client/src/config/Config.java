@@ -7,7 +7,7 @@ import java.util.Properties;
 /**
  * @author Sokolov.
  */
-public class Config{
+public class Config {
 
     private final Properties p = new Properties();
 
@@ -18,17 +18,17 @@ public class Config{
         return serverName;
     }
 
-    public String getOurName(){
+    public String getOurName() {
         return ourName;
     }
 
     private static Config ourInstance = new Config();
 
-    public static Config getInstance(){
+    public static Config getInstance() {
         return ourInstance;
     }
 
-    private Config(){
+    private Config() {
         String separator = System.getProperty("file.separator");
         try {
             p.load(new FileReader(".." + separator + "Client" + separator + "conf" + separator +

@@ -5,21 +5,21 @@ import Chat.User;
 /**
  * Created by HREN_VAM.
  */
-public class Query{
+public class Query {
 
     private String author;
     private String message;
 
-    public Query(String author, String message){
+    public Query(String author, String message) {
         this.author = author;
         this.message = message;
     }
 
-    public String getAuthor(){
+    public String getAuthor() {
         return author;
     }
 
-    public String getMessage(){
+    public String getMessage() {
         return message;
     }
 }

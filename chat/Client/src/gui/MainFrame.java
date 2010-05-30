@@ -11,16 +11,16 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Created by HREN_VAM.
  */
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame {
 
     private BlockingQueue<String> queue;
     private JTextArea text;
 
-    public MainFrame(String title, BlockingQueue<String> queue){
+    public MainFrame(String title, BlockingQueue<String> queue) {
         super(title);
 
         this.queue = queue;
-        
+
         getContentPane().setLayout(new BorderLayout());
 
         text = new JTextArea("ЧОЧО!1 ЖЫВТОНЕ!!1 УПЯЧКА1 УПЯЧКА11");
@@ -45,20 +45,20 @@ public class MainFrame extends JFrame{
 
     }
 
-    public void addText(String s){
+    public void addText(String s) {
         text.append(s + "\n");
     }
 
-    private class SendAction extends AbstractAction{
+    private class SendAction extends AbstractAction {
 
         private JEditorPane edit;
 
-        public SendAction(String name, JEditorPane edit){
+        public SendAction(String name, JEditorPane edit) {
             super(name);
             this.edit = edit;
         }
 
-        public void actionPerformed(ActionEvent e){
+        public void actionPerformed(ActionEvent e) {
             queue.offer(edit.getText());
             edit.setText("");
         }
