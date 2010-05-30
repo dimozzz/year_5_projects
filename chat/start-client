@@ -1,2 +1,2 @@
 cd Client-bin
-java -classpath Client.jar Main -ORBInitRef NameService=corbaname::192.168.1.3:2809
+java -classpath Client.jar Main -ORBInitRef NameService=corbaname::192.168.1.3:2809 name=andrey

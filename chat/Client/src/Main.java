@@ -1,11 +1,6 @@
-import Chat.Server;
-import Chat.ServerHelper;
-import Chat.User;
-import Chat.UserHelper;
-import config.Config;
+import Chat.*;
+import util.Config;
 import gui.MainFrame;
-import impl.UserImpl;
-import impl.query.Query;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
 import org.omg.CosNaming.NameComponent;
@@ -19,11 +14,13 @@ import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
+import util.Message;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Sokolov.
@@ -43,13 +40,18 @@ public class Main {
         return ServerHelper.narrow(ncRef.resolve(path));
     }
 
-    private static User getUser(ORB orb, BlockingQueue<Query> incomingMessages) throws InvalidName,
+    private static User getUser(ORB orb, final BlockingQueue<Message> incomingMessages) throws InvalidName,
             AdapterInactive, WrongPolicy, ServantAlreadyActive, ServantNotActive {
         POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
         rootPOA.the_POAManager().activate();
         System.out.println("rootPOA activated");
 
-        UserImpl userImpl = new UserImpl(incomingMessages);
+        UserPOA userImpl = new UserPOA() {
+            @Override
+            public void receive(String author, String text) {
+                incomingMessages.offer(new Message(author, text));
+            }
+        };
         rootPOA.activate_object(userImpl);
 
         return UserHelper.narrow(rootPOA.servant_to_reference(userImpl));
@@ -60,26 +62,39 @@ public class Main {
             ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed,
             InterruptedException, InvocationTargetException {
         Config config = Config.getInstance();
+        String ourName = config.getOurName();
+        if (args[args.length - 1].startsWith("name="))
+        {
+            ourName = args[args.length - 1].substring(5);
+            String tmp[] = new String[args.length - 1];
+            System.arraycopy(args, 0, tmp, 0, tmp.length);
+            args = tmp;
+        }
         final ORB orb = ORB.init(args, null);
         System.out.println("ORB initialized");
 
-
-        final BlockingQueue<Query> incomingMessages = new LinkedBlockingQueue<Query>();
+        final BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<Message>();
         final BlockingQueue<String> outcomingMessages = new LinkedBlockingQueue<String>();
 
         final Server server = getServer(orb, config.getServerName());
         System.out.println("Server created");
         final User user = getUser(orb, incomingMessages);
         System.out.println("User created");
-        server.register(user, config.getOurName());
+        server.register(user, ourName);
 
+        final AtomicBoolean quit = new AtomicBoolean(false);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    while (true) {
-                        server.send(user, outcomingMessages.take());
+                    for (String message = outcomingMessages.take(); !message.equals(":quit");
+                         message = outcomingMessages.take()) {
+                        server.send(user, message);
+                        System.out.println("send message: " + message);
                     }
+                    server.quit(user);
+                    quit.set(true);
+                    orb.destroy();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -92,11 +107,12 @@ public class Main {
             }
         }).start();
 
-        FrameCreator f = new FrameCreator("ЧЯТ", outcomingMessages);
+        FrameCreator f = new FrameCreator("Intelligent chat, you are " + ourName, outcomingMessages);
         SwingUtilities.invokeAndWait(f);
-        while (true) {
-            Query q = incomingMessages.take();
-            f.getFrame().addText(q.getAuthor() + ": " + q.getMessage());
+        while (!quit.get()) {
+            Message m = incomingMessages.take();
+            System.out.println("got message: author = " + m.getAuthor() + ", text = " + m.getText());
+            f.getFrame().publishMessage(m);
         }
     }
 
