@@ -18,6 +18,8 @@ struct User_i : POA_Chat::User
 
 int main( int argc, char** argv )
 {
+//    _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
+
     if (argc != 2 && argc != 3)
        return 1;
 
@@ -81,10 +83,8 @@ int main( int argc, char** argv )
     return 0;
 }
 
-static CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb)
+CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb)
 {
-    _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
-
     CosNaming::NamingContext_var rootContext;
 
     try {
