@@ -20,6 +20,8 @@ import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Sokolov.
@@ -47,7 +49,7 @@ public class Main {
 
         UserPOA userImpl = new UserPOA() {
             @Override
-            public void receive(String author, String text) {
+            public synchronized void receive(String author, String text) {
                 incomingMessages.offer(new Message(author, text));
             }
         };
@@ -90,7 +92,6 @@ public class Main {
                         server.send(user, message);
                         System.out.println("send message: " + message);
                     }
-                    System.out.println("Main: exit");
                     server.quit(user);
                     System.exit(0);
                 } catch (InterruptedException e) {
