@@ -82,7 +82,6 @@ public class Main {
         System.out.println("User created");
         server.register(user, ourName);
 
-        final AtomicBoolean quit = new AtomicBoolean(false);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -92,9 +91,9 @@ public class Main {
                         server.send(user, message);
                         System.out.println("send message: " + message);
                     }
+                    System.out.println("Main: exit");
                     server.quit(user);
-                    quit.set(true);
-                    orb.destroy();
+                    System.exit(0);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -109,7 +108,7 @@ public class Main {
 
         FrameCreator f = new FrameCreator("Intelligent chat, you are " + ourName, outcomingMessages);
         SwingUtilities.invokeAndWait(f);
-        while (!quit.get()) {
+        while (true) {
             Message m = incomingMessages.take();
             System.out.println("got message: author = " + m.getAuthor() + ", text = " + m.getText());
             f.getFrame().publishMessage(m);

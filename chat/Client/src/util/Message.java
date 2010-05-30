@@ -4,7 +4,7 @@ public class Message {
     private final String author;
     private final String text;
 
-    public Message(String text, String author) {
+    public Message(String author, String text) {
         this.text = text;
         this.author = author;
     }
