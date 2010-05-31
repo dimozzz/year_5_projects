@@ -2,13 +2,13 @@ module Chat
 {
 	interface User
 	{
-		void receive(in string author, in string message);
+		oneway void receive(in string author, in string message);
 	};
 
 	interface Server
 	{
 		boolean register(in User u, in string name);
-		void quit(in User u);
-		void send(in User u, in string message);
+		oneway void quit(in User u);
+		oneway void send(in User u, in string message);
 	};
 };
