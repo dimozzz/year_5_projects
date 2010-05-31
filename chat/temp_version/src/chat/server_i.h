@@ -4,6 +4,9 @@
 #include <sstream>
 #include <utility>
 #include <vector>
+#include <boost/foreach.hpp>
+
+#define foreach BOOST_FOREACH  
 
 #include <boost/thread.hpp>
 #include "corba_user_ptr.h"
@@ -55,13 +58,16 @@ struct Server_i : POA_Chat::Server
     {
         lock_t lock(m_);
 
+        bool res = insert(v_, corba_user_ptr::make(u), name);
+        if (res)
         {
            std::stringstream ss;
            ss << "user \"" << name << "\" registered";
            deliver("server", ss.str().c_str());
+           u->receive("server", "you are registred"); 
         }
 
-        return insert(v_, corba_user_ptr::make(u), name);
+        return res;
     }
 
     void quit(::Chat::User_ptr u)
@@ -100,7 +106,13 @@ struct Server_i : POA_Chat::Server
         {
             user_name_vec::iterator ui = find(v_, corba_user_ptr::make(u));
             if (ui == v_.end())
+            {
+                foreach(user_name_t const & user, v_)
+                {
+                    std::cout << user.first.ptr_ << "\t" << user.second;
+                }
                 u_name = "<unregistered user>";
+            }
             else
                 u_name = ui->second;
         }

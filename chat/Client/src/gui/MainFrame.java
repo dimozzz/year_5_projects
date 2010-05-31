@@ -24,8 +24,17 @@ public class MainFrame extends JFrame {
         editor.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                outcomingMessages.add(editor.getText());
-                editor.setText("");
+                String message = editor.getText(); 
+                try {
+                    outcomingMessages.put(message);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                if (message.equals(":quit")) {
+                    dispose();
+                } else {
+                    editor.setText("");
+                }
             }
         });
         getContentPane().add(new JScrollPane(otherMessages), BorderLayout.CENTER);
@@ -35,7 +44,11 @@ public class MainFrame extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                outcomingMessages.offer(":quit");
+                try {
+                    outcomingMessages.put(":quit");
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         setSize(600, 400);

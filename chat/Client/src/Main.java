@@ -20,8 +20,7 @@ import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Sokolov.
@@ -81,8 +80,14 @@ public class Main {
         System.out.println("Server created");
         final User user = getUser(orb, incomingMessages);
         System.out.println("User created");
-        server.register(user, ourName);
+        if (server.register(user, ourName)) {
+            System.out.println("User registered");
+        } else {
+            System.out.println("There was a user with name " + ourName);
+            System.exit(239);
+        }
 
+        final AtomicBoolean quit = new AtomicBoolean(false);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -93,22 +98,16 @@ public class Main {
                         System.out.println("send message: " + message);
                     }
                     server.quit(user);
-                    System.exit(0);
+                    quit.set(true);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
         }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                orb.run();
-            }
-        }).start();
 
         FrameCreator f = new FrameCreator("Intelligent chat, you are " + ourName, outcomingMessages);
         SwingUtilities.invokeAndWait(f);
-        while (true) {
+        while (!quit.get()) {
             Message m = incomingMessages.take();
             System.out.println("got message: author = " + m.getAuthor() + ", text = " + m.getText());
             f.getFrame().publishMessage(m);
