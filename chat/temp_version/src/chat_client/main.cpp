@@ -1,9 +1,11 @@
 #include <omniORB4/CORBA.h>
 #include <omniORB4/poa.h>
 
+#include "common/orb_initializer.h"
 #include "chat.idl.h"
 
 #include <iostream>
+
 using namespace std;
 
 CORBA::Object_ptr getObjectReference(CORBA::ORB_ptr orb);
@@ -24,9 +26,9 @@ int main( int argc, char** argv )
        return 1;
 
     try {
-        CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
+        orb_initializer orb(argc, argv);
 
-        CORBA::Object_var poa_obj = orb->resolve_initial_references("RootPOA");
+        CORBA::Object_var poa_obj = orb.get()->resolve_initial_references("RootPOA");
         PortableServer::POA_var poa = PortableServer::POA::_narrow(poa_obj);
 
         User_i * u = new User_i();
@@ -37,7 +39,7 @@ int main( int argc, char** argv )
         PortableServer::POAManager_var pman = poa->the_POAManager();
         pman->activate();
 
-        CORBA::Object_var obj = getObjectReference(orb);
+        CORBA::Object_var obj = getObjectReference(orb.get());
         Chat::Server_var echoref = Chat::Server::_narrow(obj);
 
         if ( CORBA::is_nil(echoref) ) {
@@ -55,14 +57,13 @@ int main( int argc, char** argv )
            }
            else
            {
-              orb->run();
+              orb.get()->run();
            }
         }
         else
            cerr << "can't register on server" << endl;
 
         u->_remove_ref();
-        orb->destroy();
     }
     catch (CORBA::TRANSIENT&) {
         cerr << "Caught system exception TRANSIENT -- unable to contact the "

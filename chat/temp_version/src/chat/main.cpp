@@ -1,6 +1,7 @@
 #include <omniORB4/CORBA.h>
 #include <omniORB4/poa.h>
 
+#include "common/orb_initializer.h"
 #include <iostream>
 
 #include "chat.idl.h"
@@ -85,19 +86,19 @@ int main(int argc, char ** argv)
 {
 //    _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
 
-    CORBA::ORB_var orb = CORBA::ORB_init(argc, argv/*, "omniORB4"*/);
+    orb_initializer orb(argc, argv);
 
-    CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
+    CORBA::Object_var obj = orb.get()->resolve_initial_references("RootPOA");
     PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
 
-    Server_i * myecho = new Server_i(orb);
+    Server_i * myecho = new Server_i(orb.get());
     PortableServer::ObjectId_var myechoid = poa->activate_object(myecho);
 
     CORBA::Object_var obj2 = myecho->_this();
-    CORBA::String_var sior(orb->object_to_string(obj2));
+    CORBA::String_var sior(orb.get()->object_to_string(obj2));
     std::cout << sior << std::endl;
 
-    if (!bindObjectToName(orb, obj2))
+    if (!bindObjectToName(orb.get(), obj2))
         return 1;
 
     myecho->_remove_ref();
@@ -105,8 +106,7 @@ int main(int argc, char ** argv)
     PortableServer::POAManager_var pman = poa->the_POAManager();
     pman->activate();
 
-    orb->run();
+    orb.get()->run();
 
-    orb->destroy();
     return 0;
 }
