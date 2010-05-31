@@ -1,7 +1,7 @@
 #include <omniORB4/CORBA.h>
 #include <omniORB4/poa.h>
 
-#include "../idl/chat.hh"
+#include "chat.idl.h"
 
 #include <iostream>
 using namespace std;

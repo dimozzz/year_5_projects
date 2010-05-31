@@ -3,5 +3,7 @@ then
    mkdir ../bin
 fi
 
-g++ -ggdb `pkg-config --cflags --libs omniORB4` -l boost_thread -o ../bin/chat chat/main.cpp idl/chatSK.cc
-g++ -ggdb `pkg-config --cflags --libs omniORB4` -o ../bin/chat_client chat_client/main.cpp idl/chatSK.cc
+cd ../bin
+omniidl -bcxx -Wbh=.idl.h -Wbs=.idl.cpp ../src/idl/chat.idl
+g++ -ggdb -I. `pkg-config --cflags --libs omniORB4` -l boost_thread -o chat ../src/chat/main.cpp chat.idl.cpp
+g++ -ggdb -I. `pkg-config --cflags --libs omniORB4` -o chat_client ../src/chat_client/main.cpp chat.idl.cpp

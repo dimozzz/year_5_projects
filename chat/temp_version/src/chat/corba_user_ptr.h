@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../idl/chat.hh"
+#include "chat.idl.h"
 
 struct corba_user_ptr;
 

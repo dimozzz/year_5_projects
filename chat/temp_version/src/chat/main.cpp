@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "../idl/chat.hh"
+#include "chat.idl.h"
 #include "server_i.h"
 
 CORBA::Boolean bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr objref)
