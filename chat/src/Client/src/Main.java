@@ -1,5 +1,4 @@
 import Chat.*;
-import util.Config;
 import gui.MainFrame;
 import org.omg.CORBA.ORB;
 import org.omg.CORBA.ORBPackage.InvalidName;
@@ -14,16 +13,13 @@ import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
+import util.Config;
 import util.Message;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Sokolov.
@@ -103,7 +99,6 @@ public class Main {
             System.exit(239);
         }
 
-        final AtomicBoolean quit = new AtomicBoolean(false);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -114,14 +109,14 @@ public class Main {
                         System.out.println("send message: " + message);
                     }
                     server.quit(user);
-                    quit.set(true);
+                    System.exit(0);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
         }).start();
 
-        while (!quit.get()) {
+        while (true) {
             Message m = incomingMessages.take();
             System.out.println("got message: author = " + m.getAuthor() + ", text = " + m.getText());
             f.getFrame().publishMessage(m);
