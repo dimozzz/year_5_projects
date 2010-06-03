@@ -18,7 +18,10 @@ import util.Message;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -35,12 +38,12 @@ public class Main {
         System.out.println("Naming context got");
 
         NameComponent[] path = {
-                new NameComponent(serverName,"Object")
+                new NameComponent(serverName, "Object")
         };/*ncRef.to_name(serverName);*/
         return ServerHelper.narrow(ncRef.resolve(path));
     }
 
-    private static User getUser(ORB orb, final BlockingQueue<Message> incomingMessages) throws InvalidName,
+    private static User getUser(ORB orb, final BlockingQueue<Message> incomingMessages, final MainFrame frame) throws InvalidName,
             AdapterInactive, WrongPolicy, ServantAlreadyActive, ServantNotActive {
         POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
         rootPOA.the_POAManager().activate();
@@ -50,6 +53,16 @@ public class Main {
             @Override
             public synchronized void receive(String author, String text) {
                 incomingMessages.offer(new Message(author, text));
+            }
+
+            @Override
+            public void addUser(String name) {
+                frame.addUser(name);
+            }
+
+            @Override
+            public void removeUser(String name) {
+                frame.removeUser(name);
             }
         };
         rootPOA.activate_object(userImpl);
@@ -63,8 +76,7 @@ public class Main {
             InterruptedException, InvocationTargetException {
         Config config = Config.getInstance();
         String ourName = config.getOurName();
-        if (args[args.length - 1].startsWith("name="))
-        {
+        if (args[args.length - 1].startsWith("name=")) {
             ourName = args[args.length - 1].substring(5);
             String tmp[] = new String[args.length - 1];
             System.arraycopy(args, 0, tmp, 0, tmp.length);
@@ -78,7 +90,11 @@ public class Main {
 
         final Server server = getServer(orb, config.getServerName());
         System.out.println("Server created");
-        final User user = getUser(orb, incomingMessages);
+
+        FrameCreator f = new FrameCreator("Intelligent chat, you are " + ourName, outcomingMessages);
+        SwingUtilities.invokeAndWait(f);
+
+        final User user = getUser(orb, incomingMessages, f.getFrame() );
         System.out.println("User created");
         if (server.register(user, ourName)) {
             System.out.println("User registered");
@@ -105,8 +121,6 @@ public class Main {
             }
         }).start();
 
-        FrameCreator f = new FrameCreator("Intelligent chat, you are " + ourName, outcomingMessages);
-        SwingUtilities.invokeAndWait(f);
         while (!quit.get()) {
             Message m = incomingMessages.take();
             System.out.println("got message: author = " + m.getAuthor() + ", text = " + m.getText());
@@ -117,8 +131,8 @@ public class Main {
     private static class FrameCreator implements Runnable {
 
         private MainFrame f;
-        private String title;
-        private BlockingQueue<String> queue;
+        private final String title;
+        private final BlockingQueue<String> queue;
 
         public FrameCreator(String title, BlockingQueue<String> queue) {
             this.title = title;

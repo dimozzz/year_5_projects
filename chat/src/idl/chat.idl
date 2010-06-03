@@ -3,6 +3,8 @@ module Chat
 	interface User
 	{
 		oneway void receive(in string author, in string message);
+        oneway void addUser(in string name);
+        oneway void removeUser(in string name);
 	};
 
 	interface Server

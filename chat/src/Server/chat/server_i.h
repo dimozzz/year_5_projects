@@ -7,6 +7,7 @@
 #include <boost/foreach.hpp>
 
 #define foreach BOOST_FOREACH  
+#include <boost/function.hpp>
 
 #include <boost/thread.hpp>
 #include "corba_user_ptr.h"
@@ -61,14 +62,56 @@ struct Server_i : POA_Chat::Server
         bool res = insert(v_, corba_user_ptr::make(u), name);
         if (res)
         {
-           std::stringstream ss;
-           ss << "user \"" << name << "\" registered";
-           deliver("server", ss.str().c_str());
-           u->receive("server", "you are registred"); 
+            std::cerr << "user " << name << " registred\n";
+            for (user_name_vec::const_iterator it = v_.begin(); it != boost::prior(v_.end()); ++it)
+            {
+                u->addUser(it->second.c_str());
+            }
+            remove_users(for_each_user(add_user_t(name)));
         }
-
         return res;
+    }    
+    
+private:
+    struct add_user_t
+    {
+        add_user_t(const char* name) : name_(name) {}
+
+        void operator() (corba_user_ptr & user)
+        {
+           user->addUser(name_);
+        }
+    private:
+        const char* name_;
+    };
+
+
+    struct remove_users_t
+    {
+       remove_users_t( std::vector<std::string> const * removing_users)
+            : removing_users_(*removing_users)
+       {}
+
+       void operator() (corba_user_ptr & user)
+       {
+          foreach (std::string const & name, removing_users_)
+            user->removeUser(name.c_str());
+       }
+
+    private:
+       std::vector<std::string> const & removing_users_;
+    };
+
+    void remove_users(std::vector<std::string> removing_users)
+    {
+        while (!removing_users.empty()) 
+        {
+            std::vector<std::string> tmp = for_each_user(remove_users_t(&removing_users)); 
+            removing_users.swap(tmp);
+        }
     }
+
+public:
 
     void quit(::Chat::User_ptr u)
     {
@@ -77,20 +120,44 @@ struct Server_i : POA_Chat::Server
         user_name_vec::iterator i = std::find_if(v_.begin(), v_.end(), first_is(corba_user_ptr::make(u)));
         if (i == v_.end())
         {
-           deliver("server", "can't erase user: unknown user");
+           remove_users(deliver("server", "can't erase user: unknown user"));
            return;
         }
 
         assert(std::find_if(i + 1, v_.end(), first_is(corba_user_ptr::make(u))) == v_.end());
+        std::cerr << "user " << i->second << " quited\n";
 
-        {
-           std::stringstream ss;
-           ss << "user \"" << i->second << "\" left";
-           deliver("server", ss.str().c_str());
-        }
+        remove_users(std::vector<std::string>(1, i->second));
 
         v_.erase(i);
     }
+
+private:
+
+    typedef boost::function<void(corba_user_ptr &)> user_functor_t; 
+
+    std::vector<std::string> for_each_user(user_functor_t f)
+    {
+        std::vector<std::string> res;
+        user_name_vec::iterator i = v_.begin();
+        while (i != v_.end())
+        {
+            try
+            {
+                f(i->first);
+                ++i;
+            }
+            catch (CORBA::Exception const & e)
+            {
+                std::cerr << "Caught a CORBA::" << e._name() << " in send (kick user \"" << i->second << "\")." << std::endl;
+                res.push_back(std::string(i->second));
+                i = v_.erase(i);
+            }
+        }
+        return res;
+    }
+
+public:
 
     void send(::Chat::User_ptr u, const char* message)
     {
@@ -117,27 +184,32 @@ struct Server_i : POA_Chat::Server
                 u_name = ui->second;
         }
 
-        deliver(u_name, message);
+        remove_users(deliver(u_name, message));
     }
 
-    void deliver(std::string const & from, std::string const & message)
+private:
+
+    struct deliver_t
     {
-       user_name_vec::iterator i = v_.begin();
-       while (i != v_.end())
+       deliver_t(const char * from, const char * message)
+            : from_(from), message_(message)
+       {}
+
+       void operator() (corba_user_ptr & user)
        {
-          try
-          {
-             i->first->receive(from.c_str(), message.c_str());
-             ++i;
-          }
-          catch (CORBA::Exception const & e)
-          {
-             std::cerr << "Caught a CORBA::" << e._name() << " in send (kick user \"" << i->second << "\")." << std::endl;
-             i = v_.erase(i);
-          }
+          user->receive(from_, message_);
        }
 
+    private:
+       const char * from_;
+       const char * message_;
+    };
+
+    std::vector<std::string> deliver(std::string const & from, std::string const & message)
+    {
        std::cerr << from << ": " << message << std::endl;
+
+       return for_each_user(deliver_t(from.c_str(), message.c_str()));      
     }
 
 private:

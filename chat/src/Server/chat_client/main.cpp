@@ -16,6 +16,10 @@ struct User_i : POA_Chat::User
     {
         std::cout << author << ": " << message << std::endl;
     }
+    void addUser(const char* username)
+    {
+        std::cout << "added user " << username << std::endl;
+    }
 };
 
 int main( int argc, char** argv )
