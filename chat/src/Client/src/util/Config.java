@@ -28,11 +28,21 @@ public class Config {
         return ourInstance;
     }
 
+    private static String makePath(String... filenames)
+    {
+        if (filenames.length == 0)
+            return "";
+        String res = filenames[0];
+        for (int i = 1; i != filenames.length; ++i)
+        {
+            res += System.getProperty("file.separator") + filenames[i];
+        }
+        return res;
+    }
+
     private Config() {
-        String separator = System.getProperty("file.separator");
         try {
-            p.load(new FileReader(".." + separator + "Client" + separator + "conf" + separator +
-                    "main.properties"));
+            p.load(new FileReader(makePath("..", "src", "Client", "conf", "main.properties")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

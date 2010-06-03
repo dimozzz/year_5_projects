@@ -22,6 +22,7 @@
     <target name="clean">
 	    <delete quiet="true" includeEmptyDirs="true">
             <fileset dir="${build.out}"/>
+            <fileset dir="${src}/Chat"/>
         </delete>
     </target>
 </project>

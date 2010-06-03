@@ -46,6 +46,7 @@ public class MainFrame extends JFrame {
             public void windowClosing(WindowEvent e) {
                 try {
                     outcomingMessages.put(":quit");
+                    dispose();
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
