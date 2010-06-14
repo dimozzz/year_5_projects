@@ -18,7 +18,9 @@ CORBA::Boolean bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr objref)
         CORBA::Object_var obj;
         obj = orb->resolve_initial_references("NameService");
         // Narrow the reference returned.
+        std::cout << "NameService has been resolved" << std::endl;
         rootContext = CosNaming::NamingContext::_narrow(obj);
+        std::cout << "Root Context has been created" << std::endl;
         if( CORBA::is_nil(rootContext) )
         {
             cerr << "Failed to narrow the root naming context." << endl;
@@ -37,6 +39,11 @@ CORBA::Boolean bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr objref)
         // This should not happen!
         cerr << "Service required is invalid [does not exist]." << endl;
         return 0;
+    }
+    catch (CORBA::TRANSIENT const & )
+    {
+        std::cout << "xui!" << std::endl;
+        exit(239);
     }
 
     try
@@ -89,6 +96,7 @@ int main(int argc, char ** argv)
     orb_initializer orb(argc, argv);
 
     CORBA::Object_var obj = orb.get()->resolve_initial_references("RootPOA");
+    std::cout << "RootPOA has been created" << std::endl;
     PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
 
     Server_i * myecho = new Server_i(orb.get());
@@ -106,6 +114,7 @@ int main(int argc, char ** argv)
     PortableServer::POAManager_var pman = poa->the_POAManager();
     pman->activate();
 
+    std::cout << "server has activated" << std::endl;
     orb.get()->run();
 
     return 0;
