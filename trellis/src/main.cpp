@@ -1,9 +1,6 @@
 #include <vector>
 #include <set>
-<<<<<<< HEAD:trellis/src/main.cpp
-=======
 #include <map>
->>>>>>> Море шлака -- debug info.:trellis/src/main.cpp
 #include <cstdlib>
 #include <limits>
 #include <fstream>
@@ -45,26 +42,45 @@ private:
 
 std::string simulate( const double eps, const int N )
 {
+    std::set< int > incoming_y[8];
+    for ( int state = 0; state != 8; ++ state )
+    {
+        for ( int last_y = 0; last_y != 8; ++last_y )
+        {
+            for ( int q = 0; q != 4; ++q )
+            {
+                int tmp = encode( q, state, last_y );
+                int new_state = tmp % 8;
+                int y = tmp / 8;
+                incoming_y[new_state].insert( y );
+            }
+        }
+    }
     for ( size_t i = 0; i != 64; ++i )
     {
         preencoded_symbol[i] = -1;
     }
     for ( int state = 0; state != 8; ++state )
     {
+        assert( incoming_y[state].size() == 4 );
         std::set< int > trs;
         std::map< int, int > tr2y;
-        for ( int y = 0; y != 4; ++y )
+        foreach ( int last_y, incoming_y[state] )
         {
             for ( int q = 0; q != 4; ++q )
             {
-                int tmp = encode( q, state, y );
+                int tmp = encode( q, state, last_y );
                 int tr = (tmp / 8) * 8 + state;
                 if ( preencoded_symbol[tr] != -1 )
+                {
                     if( preencoded_symbol[tr] != q )
                     {
-                        std::cout << "state = " << state << ", y(1) = " << tr2y[tr] << ", y(2) = " << y << ":\tq(1) = " << preencoded_symbol[tr] << ", q(2) = " << q << std::endl;
+                        std::cout   << "state = " << state 
+                                    << ":\t{ (" << tr2y[tr] << ", " << preencoded_symbol[tr] 
+                                    << "), (" << last_y << ", " << q << ") }" << std::endl;
                     }
-                tr2y[tr] = y;
+                }
+                tr2y[tr] = last_y;
 				preencoded_symbol[tr] = q;
                 trs.insert( tmp );
             }

@@ -20,7 +20,7 @@ struct decoder_t
             foreach ( int tr, transitions[state] )
             {
                 int new_state = tr % 8;
-               int y = tr / 8;
+                int y = tr / 8;
                 int nearest = find_nearest( signal, y );
                 int notencoded_symbol = preencoded_symbol[(nearest / 4) * 8 + state] * 4 + nearest % 4; 
                 layer[state].push_back( transition( dist( signal, code[nearest] ), new_state, notencoded_symbol ) );
@@ -67,7 +67,6 @@ struct decoder_t
         {
             res.push_back( symbol[i][state] );
             state = prev[i][state];
-            std::cout << state << " ";
         }
         std::reverse( res.begin(), res.end() );
         return res;
