@@ -9,5 +9,5 @@ run : simulator
 	simulator
 
 compile : src/main.cpp
-	$(CC) -o simulator $<
+	$(CC) -o simulator -I/usr/local/boost_1_40_0 $<
 

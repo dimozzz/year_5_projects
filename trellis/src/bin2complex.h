@@ -38,4 +38,4 @@ signal_t code[32] =
     signal_t( -1,  4 )
 };
 
-std::vector< int > corresponding_signals[8]; 
+std::vector< int > transitions[8];
