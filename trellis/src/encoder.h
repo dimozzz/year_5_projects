@@ -1,7 +1,7 @@
 #ifndef _ENCODER_H_
 #define _ENCODER_H_
 
-int preencoded_symbol[1 << 6];
+int preencoded_symbol[1 << 9];
 
 void subdiv( int a, int* x, size_t n )
 {
@@ -74,7 +74,7 @@ struct encoder_t
         return last_y_ * 4 + in % 4;
     }
 
-//private:
+private:
     int state_;
     int last_y_;
 };

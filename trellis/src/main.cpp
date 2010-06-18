@@ -12,6 +12,7 @@
 
 #include <boost/scoped_array.hpp>
 #include <boost/random.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "util.h"
 #include "bin2complex.h"
@@ -40,48 +41,17 @@ private:
     variate_generator< mt19937&, normal_distribution< double > > sampler_;
 };
 
-std::string simulate( const double eps, const int N )
+void preprocess()
 {
-    std::set< int > incoming_y[8];
-    for ( int state = 0; state != 8; ++ state )
+    for ( int state = 0; state != 8; ++state )
     {
+        std::set< int > trs;
         for ( int last_y = 0; last_y != 8; ++last_y )
         {
             for ( int q = 0; q != 4; ++q )
             {
                 int tmp = encode( q, state, last_y );
-                int new_state = tmp % 8;
-                int y = tmp / 8;
-                incoming_y[new_state].insert( y );
-            }
-        }
-    }
-    for ( size_t i = 0; i != 64; ++i )
-    {
-        preencoded_symbol[i] = -1;
-    }
-    for ( int state = 0; state != 8; ++state )
-    {
-        assert( incoming_y[state].size() == 4 );
-        std::set< int > trs;
-        std::map< int, int > tr2y;
-        foreach ( int last_y, incoming_y[state] )
-        {
-            for ( int q = 0; q != 4; ++q )
-            {
-                int tmp = encode( q, state, last_y );
-                int tr = (tmp / 8) * 8 + state;
-                if ( preencoded_symbol[tr] != -1 )
-                {
-                    if( preencoded_symbol[tr] != q )
-                    {
-                        std::cout   << "state = " << state 
-                                    << ":\t{ (" << tr2y[tr] << ", " << preencoded_symbol[tr] 
-                                    << "), (" << last_y << ", " << q << ") }" << std::endl;
-                    }
-                }
-                tr2y[tr] = last_y;
-				preencoded_symbol[tr] = q;
+                preencoded_symbol[last_y * 64 + state * 8 + tmp % 8] = ( tmp / 8 ) * 4 + q;
                 trs.insert( tmp );
             }
         }
@@ -90,44 +60,44 @@ std::string simulate( const double eps, const int N )
     }
 
     std::cout << "preprocessing finished" << std::endl;
+}
 
+std::string simulate( const double eps, const int N )
+{
     encoder_t encoder;
     decoder_t decoder;
     noise_generator_t noise_generator( eps );
     
     std::vector< int > in( N );
-    std::vector< int > encoder_state( N );
     for ( size_t i = 0; i != N; ++i )
     {
         in[i] = rand() % 16;
-        encoder_state[i] = encoder.state_;
         int encoded_in = encoder( in[i] );
         signal_t const & s = code[encoded_in]; 
-        decoder( s );
+        signal_t ns = noise_generator( s );
+        decoder( ns );
     }
-    //std::copy( encoder_state.rbegin(), encoder_state.rend(), 
-    //            std::ostream_iterator< int >( std::cout, " " ) );
     
-    std::cout << "coding finished" << std::endl;
+    std::cout << "encoding finished" << std::endl;
 
     std::vector< int > out = decoder.get_result();
+    std::cout << "decoding finished" << std::endl;
     assert( out.size() == N );
     boost::scoped_array< char > res( new char[N + 1] );
     for ( size_t i = 0; i != N; ++i )
     {
         res[i] = in[i] == out[i] ? '_' : '*';
-        assert( in[i] % 4 == out[i] % 4 );
-        //std::cout << in[i] << "\t" << out[i] << std::endl;
     }
     res[N] = '\0';
     return std::string( res.get() );
 }
 
-int main()
+int main( int argc, char** argv )
 {
-    std::ifstream conf( "config.txt" );
-    double eps;
-    int N;
-    conf >> eps >> N;
-    std::cout << simulate( eps, N );
+    assert( argc == 3 );
+    int N = boost::lexical_cast< int >( argv[1] );
+    double eps = boost::lexical_cast< double >( argv[2] );
+    preprocess();
+    
+    std::cout << simulate( eps, N ) << std::endl;
 }

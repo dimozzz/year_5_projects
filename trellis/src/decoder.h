@@ -19,11 +19,10 @@ struct decoder_t
         {
             foreach ( int tr, transitions[state] )
             {
-                int new_state = tr % 8;
-                int y = tr / 8;
-                int nearest = find_nearest( signal, y );
-                int notencoded_symbol = preencoded_symbol[(nearest / 4) * 8 + state] * 4 + nearest % 4; 
-                layer[state].push_back( transition( dist( signal, code[nearest] ), new_state, notencoded_symbol ) );
+                const int new_state = tr % 8;
+                const int y = tr / 8;
+                const int nearest = find_nearest( signal, y );
+                layer[state].push_back( transition( dist( signal, code[nearest] ), new_state, nearest % 4 ) );
             }
         }
         lattice_.push_back( layer );
@@ -34,12 +33,12 @@ struct decoder_t
         std::vector< double > cost( 8, 0 );
 
         std::vector< std::vector< int > > prev;
-        std::vector< std::vector< int > > symbol;
+        std::vector< std::vector< int > > last_bits;
         foreach ( layer_t const & layer, lattice_ )
         {
             assert( layer.size() == 8 );
             prev.push_back( std::vector< int >( 8 ) );
-            symbol.push_back( std::vector< int >( 8 ) );
+            last_bits.push_back( std::vector< int >( 8 ) );
             std::vector< double > next_cost( 8, std::numeric_limits< double >::max() );
             for ( int state = 0; state != 8; ++state )
             {
@@ -48,27 +47,34 @@ struct decoder_t
                     if ( make_min( next_cost[tr.end_state], cost[state] + tr.cost ) )
                     {
                         prev.back()[tr.end_state] = state;
-                        symbol.back()[tr.end_state] = tr.symbol;
+                        last_bits.back()[tr.end_state] = tr.last_bits;
                     }
                 }
             }
             cost.swap( next_cost );
         }
-        int state = -1;
+        const size_t N = lattice_.size();
+        std::vector< int > state( N + 1 );
         double min_cost = std::numeric_limits< double >::max();
         for ( int s = 0; s != 8; ++s )
         {
             if ( make_min( min_cost, cost[s] ) )
-                state = s;
+                state.back() = s;
         }
-        assert( min_cost < 1e-2 );
-        std::vector< int > res;
-        for ( int i = lattice_.size() - 1; i >= 0; --i )
+        std::vector< int > lbs( N );
+        for ( size_t i = N; i > 0; --i )
         {
-            res.push_back( symbol[i][state] );
-            state = prev[i][state];
+            state[i - 1] = prev[i - 1][state[i]];
+            lbs[i - 1] = last_bits[i - 1][state[i]];
         }
-        std::reverse( res.begin(), res.end() );
+        std::vector< int > res( N );
+        int last_y = state.front();
+        for ( size_t i = 0; i != N; ++i )
+        {
+            int tr = preencoded_symbol[last_y * 64 + state[i] * 8 + state[i + 1]];
+            res[i] = ( tr % 4 ) * 4 + lbs[i];
+            last_y = tr / 4;
+        }
         return res;
     }
 
@@ -77,14 +83,14 @@ private:
     {
         double cost;
         int end_state;
-        int symbol;
+        int last_bits;
 
         transition() {}
 
-        transition( double c, int e, int s )
+        transition( double c, int e, int lbs )
             : cost( c )
             , end_state( e )
-            , symbol( s )
+            , last_bits( lbs )
         {}
     };
 
