@@ -15,7 +15,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "util.h"
-#include "bin2complex.h"
+#include "preprocessing.h"
 #include "encoder.h"
 #include "decoder.h"
 
@@ -41,39 +41,26 @@ private:
     variate_generator< mt19937&, normal_distribution< double > > sampler_;
 };
 
-void preprocess()
+std::string simulate( const double eps, const int N, STANDARD standard )
 {
-    for ( int state = 0; state != 8; ++state )
-    {
-        std::set< int > trs;
-        for ( int last_y = 0; last_y != 8; ++last_y )
-        {
-            for ( int q = 0; q != 4; ++q )
-            {
-                int tmp = encode( q, state, last_y );
-                preencoded_symbol[last_y * 64 + state * 8 + tmp % 8] = ( tmp / 8 ) * 4 + q;
-                trs.insert( tmp );
-            }
-        }
-        assert( trs.size() == 4 );
-        transitions[state].assign( trs.begin(), trs.end() );
-    }
-
-    std::cout << "preprocessing finished" << std::endl;
-}
-
-std::string simulate( const double eps, const int N )
-{
-    encoder_t encoder;
-    decoder_t decoder;
+    encoder_t encoder( standard );
+    decoder_t decoder( standard );
     noise_generator_t noise_generator( eps );
     
     std::vector< int > in( N );
     for ( size_t i = 0; i != N; ++i )
     {
-        in[i] = rand() % 16;
+        switch ( standard )
+        {
+        case V32:
+            in[i] = rand() % 16;
+            break;
+        case V32bis:
+            in[i] = rand() % 64;
+            break;
+        }
         int encoded_in = encoder( in[i] );
-        signal_t const & s = code[encoded_in]; 
+        signal_t const & s = code[standard][encoded_in]; 
         signal_t ns = noise_generator( s );
         decoder( ns );
     }
@@ -94,10 +81,20 @@ std::string simulate( const double eps, const int N )
 
 int main( int argc, char** argv )
 {
-    assert( argc == 3 );
+    assert( argc == 4 );
     int N = boost::lexical_cast< int >( argv[1] );
     double eps = boost::lexical_cast< double >( argv[2] );
     preprocess();
+    STANDARD standard;
+    if ( argv[3] == std::string( "V32" ) )
+        standard = V32;
+    else if ( argv[3] == std::string( "V32bis" ) )
+        standard = V32bis;
+    else
+    {
+        std::cerr << "erroneous standard!" << std::endl;
+        return 1;
+    }
     
-    std::cout << simulate( eps, N ) << std::endl;
+    std::cout << simulate( eps, N, standard ) << std::endl;
 }

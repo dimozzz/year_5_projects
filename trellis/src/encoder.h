@@ -1,8 +1,6 @@
 #ifndef _ENCODER_H_
 #define _ENCODER_H_
 
-int preencoded_symbol[1 << 9];
-
 void subdiv( int a, int* x, size_t n )
 {
     for ( ; n > 0; --n )
@@ -57,9 +55,10 @@ int encode( int in, int state, int last_y )
 
 struct encoder_t
 { 
-    encoder_t() 
+    encoder_t( STANDARD standard ) 
         : state_( rand() % 8 )
         , last_y_( state_ )
+        , standard_ ( standard )
     {}
 
     /* 
@@ -68,13 +67,24 @@ struct encoder_t
      */
     int operator () ( int in )
     {
-        int tmp = encode( in / 4, state_, last_y_ );
-        state_ = tmp % 8;
-        last_y_ = tmp / 8;
-        return last_y_ * 4 + in % 4;
+        int tmp;
+        switch ( standard_ )
+        {
+        case V32:
+            tmp = encode( in / 4, state_, last_y_ );
+            state_ = tmp % 8;
+            last_y_ = tmp / 8;
+            return last_y_ * 4 + in % 4;
+        case V32bis:
+            tmp = encode( in / 16, state_, last_y_ );
+            state_ = tmp % 8;
+            last_y_ = tmp / 8;
+            return last_y_ * 16 + in % 16;
+        }
     }
 
 private:
+    STANDARD standard_;
     int state_;
     int last_y_;
 };

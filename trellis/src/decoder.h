@@ -12,6 +12,10 @@ namespace
 
 struct decoder_t
 {
+    decoder_t( STANDARD standard )
+        : standard_( standard )
+    {}
+
     void operator() ( signal_t const & signal )
     {
         layer_t layer( 8 );
@@ -22,7 +26,17 @@ struct decoder_t
                 const int new_state = tr % 8;
                 const int y = tr / 8;
                 const int nearest = find_nearest( signal, y );
-                layer[state].push_back( transition( dist( signal, code[nearest] ), new_state, nearest % 4 ) );
+                int last_bits;
+                switch ( standard_ )
+                {
+                case V32:
+                    last_bits = nearest % 4;
+                    break;
+                case V32bis:
+                    last_bits = nearest % 16;
+                    break;
+                }
+                layer[state].push_back( transition( dist( signal, code[standard_][nearest] ), new_state, last_bits ) );
             }
         }
         lattice_.push_back( layer );
@@ -72,7 +86,15 @@ struct decoder_t
         for ( size_t i = 0; i != N; ++i )
         {
             int tr = preencoded_symbol[last_y * 64 + state[i] * 8 + state[i + 1]];
-            res[i] = ( tr % 4 ) * 4 + lbs[i];
+            switch ( standard_ )
+            {
+            case V32:
+                res[i] = ( tr % 4 ) * 4 + lbs[i];
+                break;
+            case V32bis:
+                res[i] = ( tr % 4 ) * 16 + lbs[i];
+                break;
+            }
             last_y = tr / 4;
         }
         return res;
@@ -102,16 +124,29 @@ private:
         double min_dist = std::numeric_limits< double >::max();
         int res = -1;
 
-        for ( int s = y * 4; s != y * 4 + 4; ++s )
+        switch ( standard_ )
         {
-            if ( make_min( min_dist, dist( signal, code[s] ) ) )
-                res = s;
+        case V32:
+            for ( int s = y * 4; s != y * 4 + 4; ++s )
+            {
+                if ( make_min( min_dist, dist( signal, code[V32][s] ) ) )
+                    res = s;
+            }
+            break;
+        case V32bis:
+            for ( int s = y * 16; s != y * 16 + 16; ++s )
+            {
+                if ( make_min( min_dist, dist( signal, code[V32bis][s] ) ) )
+                    res = s;
+            }
+            break;
         }
 
         return res;
     }
 
 private:
+    STANDARD  standard_;
     lattice_t lattice_;
 };
 
