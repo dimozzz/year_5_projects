@@ -18,6 +18,9 @@
       \hskip1.5em plus0em minus0.5em \fi \nobreak
       \vrule height0.75em width0.5em depth0.25em\fi}
 
+\textwidth=17cm
+\oddsidemargin=0mm
+
 \begin{document}
 \lstset{language=Java}
 
@@ -62,10 +65,10 @@ $\vec{a} \in R^2$ --- аналоговый сигнал (амплитуда и �
 
 \subsubsection{V32}
 Входной символ представляет собой четыре бита ($Q_1 \ldots Q_4$), т.е. $\Sigma = \{0, 1\}^4$. Кодер имеет $8$
-состояний, т.е. три бита --- $S_0$, $S_1$, $S_2$. Схема вычисления функциий изображена на рисунке \ref{y0V32}.
+состояний, т.е. три бита --- $S_0$, $S_1$, $S_2$. Схема вычисления функциий изображена на рисунке \ref{schemeV32}.
 
 \begin{figure}
-	\center{\includegraphics[scale=1]{pic\schemeV32}}
+	\center{\includegraphics[scale=1]{pic/schemeV32.png}}
 	\caption{Схема кодирующего устройства стандарта V32}
 	\label{schemeV32}
 \end{figure}
@@ -74,9 +77,9 @@ $\vec{a} \in R^2$ --- аналоговый сигнал (амплитуда и �
 при помощи схемы, изображееной на рисунке \ref{mapperV32}.
 
 \begin{figure}
-	\center{\includegraphics[scale=1]{pic\mapperV32}}
+	\center{\includegraphics[scale=1]{pic/mapperV32.png}}
 	\caption{Схема кодирующего устройства стандарта V32}
-	\label{schemeV32}
+	\label{mapperV32}
 \end{figure}
 
 \subsubsection{V32bis}
