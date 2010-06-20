@@ -1,0 +1,58 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[russian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+
+\newtheorem{theorem}{Теорема}
+\newtheorem{lemma}{Лемма}
+\newtheorem{statement}{Утверждение}
+\newtheorem{definition}{Опр.}
+
+\newenvironment{proof}[1][Доказательство]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newcommand{\qed}{\nobreak \ifvmode \relax \else
+      \ifdim\lastskip<1.5em \hskip-\lastskip
+      \hskip1.5em plus0em minus0.5em \fi \nobreak
+      \vrule height0.75em width0.5em depth0.25em\fi}
+
+\begin{document}
+\lstset{language=Java}
+
+\section{Введение}
+
+Цель данной работы – разработка программы, эмулирующей работу скрытого канала
+с мультипликативной помехой различного уровня интенсивности, использующей TRELLIS коды 
+для помехоустойчивого кодирования передаваемой информации. Варианты TRELLIS кодов 
+выбираются из рекомендаций международного союза электросвязи ITU-T V.32, V.32bis. 
+
+\section{Постановка задачи}
+Задача разбивается на несколько модулей:
+
+\begin{enumerate}
+    \item Реализация алгоритма TRELLIS кодирования по рекоммендациям ITU-T V.32, V.32bis.
+    \item Имитация канала связи с мультипликативной ошибкой.
+    \item Реализация алгоритма декодирования Витерби.
+\end{enumerate}
+
+Заметим, что, поскольку разрабатываемое ПО носит исследовательский, а не прикладной характер,
+данный модуль разрабатывался  исходя из необходимости обеспечить максимальное удобство при
+отладке, иногда даже в ущерб эффективности в плане производительности.
+
+\section{Описание алгоритмов}
+
+\subsection{Алгоритм TRELLIS кодирования}
+
+\subsection{Имитация канала с ошибкой}
+
+\subsection{Алгоритм Витерби для TRELLIS декодирования}
+
+\section{Описание работы програамы}
+
+\section{Зaключение}
+
+\bibliography{report}
+
+\end{document}
