@@ -65,10 +65,10 @@ std::string simulate( const double eps, const int N, STANDARD standard )
         decoder( ns );
     }
     
-    std::cout << "encoding finished" << std::endl;
+    //std::cout << "encoding finished" << std::endl;
 
     std::vector< int > out = decoder.get_result();
-    std::cout << "decoding finished" << std::endl;
+    //std::cout << "decoding finished" << std::endl;
     assert( out.size() == N );
     boost::scoped_array< char > res( new char[N + 1] );
     for ( size_t i = 0; i != N; ++i )
@@ -95,6 +95,16 @@ int main( int argc, char** argv )
         std::cerr << "erroneous standard!" << std::endl;
         return 1;
     }
-    
-    std::cout << simulate( eps, N, standard ) << std::endl;
+   
+	freopen("output.txt", "w", stdout);
+	for(double eps2 = 0.01;eps2 < 1.5;eps2 += 0.04){
+		std::string s = simulate(eps2, N, standard);
+		int res = 0;
+		for(int i = 0;i < s.length();i ++){
+			if(s[i] == '_')res ++;
+		}
+		std::cout << eps2 << " " << 1.0 * res / N << std::endl;
+	}
+	
+    //std::cout << simulate( eps, N, standard ) << std::endl;
 }
