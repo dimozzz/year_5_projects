@@ -10,6 +10,7 @@
         <javac
                 srcdir="${src}"
                 destdir="${build.out}"
+                debug="true"
         />
 		<jar destfile="${deploy}/${jar}">
 			<fileset dir="${build.out}"/>
