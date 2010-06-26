@@ -53,7 +53,35 @@ struct Server_i : POA_Chat::Server
 
     Server_i(CORBA::ORB_ptr orb)
         : orb_(orb)
+        , should_quit_(false)
+        , thread_(boost::bind(&Server_i::thread_proc, this))
     {}
+
+    ~Server_i()
+    {
+        {
+            lock_t lock(m_);
+            should_quit_ = true;
+        }
+        thread_.join();
+    }
+
+    void thread_proc()
+    {
+        for (;;)
+        {
+            lock_t lock(m_);
+            if (should_quit_)
+                return;
+
+            prune_dead();            
+        }
+    }
+
+    void prune_dead()
+    {
+        remove_users(deliver("alive", ""));
+    }
 
     ::CORBA::Boolean _cxx_register(::Chat::User_ptr u, const char* name)
     {
@@ -207,7 +235,8 @@ private:
 
     std::vector<std::string> deliver(std::string const & from, std::string const & message)
     {
-       std::cerr << from << ": " << message << std::endl;
+       if ( !( ( from == "alive" ) && ( message == "" ) ) ) 
+            std::cerr << from << ": " << message << std::endl;
 
        return for_each_user(deliver_t(from.c_str(), message.c_str()));      
     }
@@ -216,4 +245,6 @@ private:
     CORBA::ORB_ptr orb_;
     user_name_vec v_;
     boost::mutex m_;
+    bool should_quit_;
+    boost::thread thread_;
 };
