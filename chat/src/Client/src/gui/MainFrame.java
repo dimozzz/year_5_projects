@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.BlockingQueue;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Sokolov.
@@ -17,10 +19,10 @@ public class MainFrame extends JFrame {
 
     private final JTextField editor = new JTextField();
     private final JTextArea otherMessages = new JTextArea();
-    private final JTextArea users = new JTextArea();
+    private final JTextArea userArea = new JTextArea();
+    private final List<String> users = new ArrayList<String>();
 
-    public MainFrame(String title, final BlockingQueue<String> outcomingMessages) {
-        super(title);
+    public MainFrame(final BlockingQueue<String> outcomingMessages) {
 
         editor.addActionListener(new ActionListener() {
             @Override
@@ -38,10 +40,10 @@ public class MainFrame extends JFrame {
                 }
             }
         });
-        users.setEditable(false);
+        userArea.setEditable(false);
         JSplitPane panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
         panel.add(new JScrollPane(otherMessages), JSplitPane.LEFT, 0);
-        panel.add(new JScrollPane(users), JSplitPane.RIGHT, 1);
+        panel.add(new JScrollPane(userArea), JSplitPane.RIGHT, 1);
         getContentPane().add(panel, BorderLayout.CENTER);
 
         otherMessages.setEditable(false);
@@ -68,20 +70,21 @@ public class MainFrame extends JFrame {
     }
 
     public synchronized void addUser(String name) {
-        users.setText(users.getText() + name + "\n");
+        users.add(name);
+        if (users.size() == 1)
+            userArea.setText(name);
+        else
+            userArea.setText(userArea.getText() + "\n" + name);
     }
 
     public synchronized void removeUser(String name) {
-        String allUsers = users.getText();
-        int ind = allUsers.indexOf("\n" + name);
-        if (ind == -1) {
-            ind = allUsers.indexOf(name);
-            assert(ind == 0);
-            allUsers = allUsers.substring(name.length() + 1);
-        } else {
-            allUsers = allUsers.substring(0, ind) + allUsers.substring(ind + name.length() + 1);
-        }
-        users.setText(allUsers);
+        users.remove(users.indexOf(name));
+        String text = "";
+        for (int i = 0; i != users.size() - 1; ++i)
+            text += users.get(i) + "\n";
+        if (!users.isEmpty())
+            text += users.get(users.size() - 1);
+        userArea.setText(text);
     }
 
 }

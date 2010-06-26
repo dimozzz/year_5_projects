@@ -71,13 +71,7 @@ public class Main {
             ServantAlreadyActive, ServantNotActive, NotFound, CannotProceed,
             InterruptedException, InvocationTargetException {
         Config config = Config.getInstance();
-        String ourName = config.getOurName();
-        if (args[args.length - 1].startsWith("name=")) {
-            ourName = args[args.length - 1].substring(5);
-            String tmp[] = new String[args.length - 1];
-            System.arraycopy(args, 0, tmp, 0, tmp.length);
-            args = tmp;
-        }
+
         final ORB orb = ORB.init(args, null);
         System.out.println("ORB initialized");
 
@@ -87,17 +81,21 @@ public class Main {
         final Server server = getServer(orb, config.getServerName());
         System.out.println("Server created");
 
-        FrameCreator f = new FrameCreator("Intelligent chat, you are " + ourName, outcomingMessages);
+        FrameCreator f = new FrameCreator(outcomingMessages);
         SwingUtilities.invokeAndWait(f);
 
         final User user = getUser(orb, incomingMessages, f.getFrame() );
         System.out.println("User created");
-        if (server.register(user, ourName)) {
-            System.out.println("User registered");
-        } else {
-            System.out.println("There was a user with name " + ourName);
-            System.exit(239);
+
+        String ourName;
+        ourName = javax.swing.JOptionPane.showInputDialog("Type your name");
+        while ( !server.register(user, ourName)) {
+            javax.swing.JOptionPane.showMessageDialog(null, "There has been user with name " + ourName, "", javax.swing.JOptionPane.WARNING_MESSAGE);
+            ourName = javax.swing.JOptionPane.showInputDialog("Type your name");
+                
         }
+        System.out.println("User registered");
+        f.getFrame().setTitle("You are " + ourName);
 
         new Thread(new Runnable() {
             @Override
@@ -118,6 +116,8 @@ public class Main {
 
         while (true) {
             Message m = incomingMessages.take();
+            if ( m.getAuthor().equals("alive") && m.getText().equals(""))
+                continue;
             System.out.println("got message: author = " + m.getAuthor() + ", text = " + m.getText());
             f.getFrame().publishMessage(m);
         }
@@ -126,16 +126,14 @@ public class Main {
     private static class FrameCreator implements Runnable {
 
         private MainFrame f;
-        private final String title;
         private final BlockingQueue<String> queue;
 
-        public FrameCreator(String title, BlockingQueue<String> queue) {
-            this.title = title;
+        public FrameCreator(BlockingQueue<String> queue) {
             this.queue = queue;
         }
 
         public void run() {
-            f = new MainFrame(title, queue);
+            f = new MainFrame(queue);
         }
 
         public MainFrame getFrame() {
