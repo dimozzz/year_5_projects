@@ -1,2 +1,2 @@
 cd bin
-./chat
+./chat -nativeORBCharset UTF-16

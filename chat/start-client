@@ -1,2 +1,2 @@
 cd bin
-java -classpath Client.jar Main -ORBInitRef NameService=corbaname::127.0.0.1:2809 name=$1
+java -classpath Client.jar Main -ORBInitRef NameService=corbaname::127.0.0.1:2809 -nativeORBCharset UTF-16
