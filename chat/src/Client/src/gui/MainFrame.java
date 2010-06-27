@@ -31,11 +31,9 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 String message = editor.getText(); 
                 try {
-                    outcomingMessages.put(new String(message.getBytes("UTF-8"), "UTF-8"));
+                    outcomingMessages.put(message);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
-                }catch(UnsupportedEncodingException e){
-					throw new RuntimeException(e);
 				}
                 if (message.equals(":quit")) {
                     dispose();

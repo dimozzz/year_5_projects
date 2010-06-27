@@ -92,13 +92,8 @@ CORBA::Boolean bindObjectToName(CORBA::ORB_ptr orb, CORBA::Object_ptr objref)
 int main(int argc, char ** argv)
 {
 //    _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF);
-	char* fake_argv[] = {
-        (char*) "-ORBnativeCharCodeSet",           (char*) "UTF-8",
-		(char*) "-ORBnativeWCharCodeSet",  (char*) "UTF-16"
-	};
-	int fake_argc = 4;
 
-	orb_initializer orb(fake_argc, fake_argv);
+	orb_initializer orb(argc, argv);
 
     CORBA::Object_var obj = orb.get()->resolve_initial_references("RootPOA");
     std::cout << "RootPOA has been created" << std::endl;
