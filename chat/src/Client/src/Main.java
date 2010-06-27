@@ -78,7 +78,7 @@ public class Main {
 		p.setProperty("com.sun.CORBA.codeset.charsets", "0x05010001"); // UTF-8
 		p.setProperty("com.sun.CORBA.codeset.wcharsets", "0x00010109, 0x05010001"); // UTF-16, UTF-8
 
-        final ORB orb = ORB.init(args, null);
+        final ORB orb = ORB.init(args, p);
         System.out.println("ORB initialized");
 
         final BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<Message>();
