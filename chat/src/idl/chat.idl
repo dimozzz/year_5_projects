@@ -2,7 +2,7 @@ module Chat
 {
 	interface User
 	{
-		oneway void receive(in string author, in string message);
+		oneway void receive(in string author, in string message, in long time);
         oneway void addUser(in string name);
         oneway void removeUser(in string name);
 	};

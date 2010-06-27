@@ -52,6 +52,7 @@ struct Server_i : POA_Chat::Server
         : orb_(orb)
         , should_quit_(false)
         , thread_(boost::bind(&Server_i::thread_proc, this))
+		, time(0)
     {}
 
     ~Server_i()
@@ -209,33 +210,40 @@ public:
                 u_name = ui->second;
         }
 
-        remove_users(deliver(u_name, message));
+        remove_users(deliver(u_name, message, time));
+		time ++;
     }
 
 private:
 
     struct deliver_t
     {
-       deliver_t(const char * from, const char * message)
-            : from_(from), message_(message)
+       deliver_t(const char * from, const char * message, int time)
+            : from_(from), message_(message), time_(time)
        {}
 
        void operator() (corba_user_ptr & user)
        {
-          user->receive(from_, message_);
+          user->receive(from_, message_, time_);
        }
 
     private:
        const char * from_;
        const char * message_;
+	   const int time_;
     };
 
-    std::vector<std::string> deliver(std::string const & from, std::string const & message)
+	std::vector<std::string> deliver(std::string const & from, std::string const & message)
+	{
+		return deliver(from, message, 0);
+	}
+
+    std::vector<std::string> deliver(std::string const & from, std::string const & message, int time)
     {
        if ( !( ( from == "alive" ) && ( message == "" ) ) ) 
             std::cerr << from << ": " << message << std::endl;
 
-       return for_each_user(deliver_t(from.c_str(), message.c_str()));
+       return for_each_user(deliver_t(from.c_str(), message.c_str(), time));
     }
 
 private:
@@ -244,4 +252,5 @@ private:
     boost::mutex m_;
     bool should_quit_;
     boost::thread thread_;
+	int time;
 };
