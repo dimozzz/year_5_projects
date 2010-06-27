@@ -1,14 +1,11 @@
 #include <assert.h>
-
 #include <algorithm>
 #include <sstream>
 #include <utility>
 #include <vector>
 #include <boost/foreach.hpp>
-
-#define foreach BOOST_FOREACH  
+#define foreach BOOST_FOREACH
 #include <boost/function.hpp>
-
 #include <boost/thread.hpp>
 #include "corba_user_ptr.h"
 #include "pair_utils.h"
@@ -74,7 +71,7 @@ struct Server_i : POA_Chat::Server
             if (should_quit_)
                 return;
 
-            prune_dead();            
+            prune_dead();
         }
     }
 
@@ -98,8 +95,8 @@ struct Server_i : POA_Chat::Server
             remove_users(for_each_user(add_user_t(name)));
         }
         return res;
-    }    
-    
+    }
+
 private:
     struct add_user_t
     {
@@ -134,7 +131,7 @@ private:
     {
         while (!removing_users.empty()) 
         {
-            std::vector<std::string> tmp = for_each_user(remove_users_t(&removing_users)); 
+            std::vector<std::string> tmp = for_each_user(remove_users_t(&removing_users));
             removing_users.swap(tmp);
         }
     }
@@ -162,7 +159,7 @@ public:
 
 private:
 
-    typedef boost::function<void(corba_user_ptr &)> user_functor_t; 
+    typedef boost::function<void(corba_user_ptr &)> user_functor_t;
 
     std::vector<std::string> for_each_user(user_functor_t f)
     {
@@ -238,7 +235,7 @@ private:
        if ( !( ( from == "alive" ) && ( message == "" ) ) ) 
             std::cerr << from << ": " << message << std::endl;
 
-       return for_each_user(deliver_t(from.c_str(), message.c_str()));      
+       return for_each_user(deliver_t(from.c_str(), message.c_str()));
     }
 
 private:

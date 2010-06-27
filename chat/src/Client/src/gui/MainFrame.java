@@ -12,6 +12,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * @author Sokolov.
  */
@@ -29,10 +31,12 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 String message = editor.getText(); 
                 try {
-                    outcomingMessages.put(message);
+                    outcomingMessages.put(new String(message.getBytes("UTF-8"), "UTF-8"));
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
-                }
+                }catch(UnsupportedEncodingException e){
+					throw new RuntimeException(e);
+				}
                 if (message.equals(":quit")) {
                     dispose();
                 } else {
