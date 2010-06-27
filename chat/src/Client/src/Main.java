@@ -14,6 +14,7 @@ import org.omg.PortableServer.POAPackage.ServantAlreadyActive;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 import util.Config;
+import util.History;
 import util.Message;
 
 import javax.swing.*;
@@ -98,7 +99,6 @@ public class Main{
         while(!server.register(user, ourName)){
             javax.swing.JOptionPane.showMessageDialog(null, "There has been user with name " + ourName, "", javax.swing.JOptionPane.WARNING_MESSAGE);
             ourName = javax.swing.JOptionPane.showInputDialog("Type your name");
-
         }
         System.out.println("User registered");
         f.getFrame().setTitle("You are " + ourName);
@@ -120,12 +120,16 @@ public class Main{
             }
         }).start();
 
+        History his = new History(ourName);
+        f.getFrame().setHistory(his);
+
         while(true){
             Message m = incomingMessages.take();
             if(m.getAuthor().equals("alive") && m.getText().equals(""))
                 continue;
-            System.out.println("got message: author = " + m.getAuthor() + ", text = " + m.getText());
-            f.getFrame().publishMessage(m);
+            System.out.println("got message: author = " + m.getAuthor() + ", text = " + m.getText() + ", time = " + m.getTime());
+            his.addServerMessage(m);
+            f.getFrame().publishMessage(MainFrame.createText(his, ourName));
         }
     }
 
@@ -146,4 +150,6 @@ public class Main{
             return f;
         }
     }
+
+
 }

@@ -52,7 +52,7 @@ struct Server_i : POA_Chat::Server
         : orb_(orb)
         , should_quit_(false)
         , thread_(boost::bind(&Server_i::thread_proc, this))
-		, time(0)
+		, time_(0)
     {}
 
     ~Server_i()
@@ -210,8 +210,8 @@ public:
                 u_name = ui->second;
         }
 
-        remove_users(deliver(u_name, message, time));
-		time ++;
+        remove_users(deliver(u_name, message, time_));
+		time_ ++;
     }
 
 private:
@@ -252,5 +252,5 @@ private:
     boost::mutex m_;
     bool should_quit_;
     boost::thread thread_;
-	int time;
+	int time_;
 };
