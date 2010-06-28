@@ -72,6 +72,8 @@ struct Server_i : POA_Chat::Server
             if (should_quit_)
                 return;
 
+            for ( int i = 0; i != 100; ++i )
+                boost::this_thread::yield();
             prune_dead();
         }
     }
@@ -211,7 +213,7 @@ public:
         }
 
         remove_users(deliver(u_name, message, time_));
-		time_ ++;
+		++time_;
     }
 
 private:
