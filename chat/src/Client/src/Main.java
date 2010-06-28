@@ -18,6 +18,8 @@ import util.History;
 import util.Message;
 
 import javax.swing.*;
+import static javax.swing.JOptionPane.showInputDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -95,9 +97,9 @@ public class Main{
         System.out.println("User created");
 
         String ourName;
-        ourName = javax.swing.JOptionPane.showInputDialog("Type your name");
-        while(!server.register(user, ourName)){
-            javax.swing.JOptionPane.showMessageDialog(null, "There has been user with name " + ourName, "", javax.swing.JOptionPane.WARNING_MESSAGE);
+        ourName = showInputDialog("Type your name");
+        while((ourName == null) || !server.register(user, ourName)){
+            showMessageDialog(null, "There has been user with name " + ourName, "", JOptionPane.WARNING_MESSAGE);
             ourName = javax.swing.JOptionPane.showInputDialog("Type your name");
         }
         System.out.println("User registered");
