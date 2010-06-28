@@ -1,16 +1,24 @@
 module Chat
 {
+    // Клиент
 	interface User
 	{
+        // Принят сообщение от такого-то автора, с таким-то текстом, пришедшее на сервер во столько-то
 		oneway void receive(in string author, in string message, in long time);
+        // Добавить пользователя в список зарегестированных
         oneway void addUser(in string name);
+        // Удалить пользователя из списка зарегистрированных
         oneway void removeUser(in string name);
 	};
 
+    // Централизованный сервер
 	interface Server
 	{
+        // Зарегистрировать пользователя. Если пользователь с именем name уже существует -- вернуть false.
 		boolean register(in User u, in string name);
+        // Удалить пользователя
 		oneway void quit(in User u);
+        // Разослать сообщение всем зарегистрированным пользователям
 		oneway void send(in User u, in string message);
 	};
 };
