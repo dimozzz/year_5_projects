@@ -45,4 +45,7 @@ public class History{
         return Collections.unmodifiableList(serverMessages);
     }
 
+    public String getName(){
+        return myName;
+    }
 }

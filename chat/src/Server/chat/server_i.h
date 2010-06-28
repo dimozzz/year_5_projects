@@ -72,8 +72,12 @@ struct Server_i : POA_Chat::Server
             if (should_quit_)
                 return;
 
-            for ( int i = 0; i != 100; ++i )
-                boost::this_thread::yield();
+            /*for ( int i = 0; i != 100; ++i )
+                boost::this_thread::yield();*/
+			boost::xtime xt;
+			boost::xtime_get(&xt, boost::TIME_UTC);
+			xt.nsec += 20000;
+			boost::thread::sleep(xt);
             prune_dead();
         }
     }

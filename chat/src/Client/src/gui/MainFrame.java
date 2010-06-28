@@ -13,8 +13,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * @author Sokolov.
  */
@@ -29,22 +27,6 @@ public class MainFrame extends JFrame{
 
     public MainFrame(final BlockingQueue<String> outcomingMessages){
         this.outcomingMessages = outcomingMessages;
-        /*editor.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent actionEvent){
-                String message = editor.getText();
-                try{
-                    outcomingMessages.put(message);
-                } catch(InterruptedException e){
-                    throw new RuntimeException(e);
-                }
-                if(message.equals(":quit")){
-                    dispose();
-                } else{
-                    editor.setText("");
-                }
-            }
-        });*/
         userArea.setEditable(false);
         JSplitPane panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
         panel.add(new JScrollPane(otherMessages), JSplitPane.LEFT, 0);
@@ -95,7 +77,7 @@ public class MainFrame extends JFrame{
     }
 
     public synchronized void setHistory(History h){
-        editor.addActionListener(new EditorListener(h, outcomingMessages));
+        editor.addActionListener(new EditorListener(h, outcomingMessages, this));
     }
 
     public static String createText(History h, String name){
@@ -119,10 +101,12 @@ public class MainFrame extends JFrame{
 
         private final History h;
         private final BlockingQueue<String> outcomingMessages;
+        private MainFrame parent;
 
-        public EditorListener(History h, BlockingQueue<String> outcomingMessages){
+        public EditorListener(History h, BlockingQueue<String> outcomingMessages, MainFrame p){
             this.h = h;
             this.outcomingMessages = outcomingMessages;
+            this.parent = p;
         }
 
         @Override
@@ -130,6 +114,7 @@ public class MainFrame extends JFrame{
             String message = editor.getText();
             try{
                 h.addMyMessage(message);
+                parent.publishMessage(MainFrame.createText(h, h.getName()));
                 outcomingMessages.put(message);
             } catch(InterruptedException e){
                 throw new RuntimeException(e);
